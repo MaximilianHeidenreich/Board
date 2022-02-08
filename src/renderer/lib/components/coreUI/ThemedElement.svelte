@@ -3,7 +3,7 @@
 </script>
 
 {#if $darkMode}
-<slot name="dark" />
+    <slot name="dark" />
 {:else}
-<slot name="light" />
+    <slot name="light" />
 {/if}

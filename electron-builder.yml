@@ -1,7 +1,9 @@
 appId: com.maximilianheidenreich.board
-productName: board 
+productName: Board
 copyright: Copyright © 2022 Maximilian Vincent Heidenreich
 directories:
-  output: dist
-  buildResources: build
-  app: app
+    output: dist
+    buildResources: build
+    app: app
+mac: # https://www.electron.build/configuration/dmg
+    category: public.app-category.productivity

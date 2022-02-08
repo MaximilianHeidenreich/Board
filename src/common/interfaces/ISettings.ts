@@ -1,19 +1,22 @@
+import type { EBoardLayout } from "./EBoardLayout"
+
 export interface ISettings {
     // Application
     windowBounds: {
-        width: number;
-        height: number;
-    };
+        width: number
+        height: number
+    }
 
     // User
-    displayName: string;
+    displayName: string
 
     // App state
-    openBoard: string;
+    openBoardId: string
 
     // Board view
-    userGridColumns: number;
-    gridPaddingValue: number; // Base padding (e.g. 1rem) which gets multiplied with userGridPadding to get final padding
-    gridPaddingUnit: string;
-    userGridPaddingFactor: number;
+    defaultBoardLayout: EBoardLayout
+    defaultBoardGridColumns: number
+    defaultBoardGridPaddingValue: number // Base padding (e.g. 1rem) which gets multiplied with userGridPadding to get final padding
+    defaultBoardGridPaddingUnit: string
+    defaultBoardGridPaddingFactor: number
 }

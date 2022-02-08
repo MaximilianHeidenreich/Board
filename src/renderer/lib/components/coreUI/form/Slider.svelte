@@ -1,10 +1,13 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
+    const dispatch = createEventDispatcher();
+
     export let  min: number = 0,
                 max: number = 3,
                 value: number = 2;
 </script>
 
-<input type="range" min={min} max={max} bind:value={value} class="slider">
+<input type="range" min={min} max={max} bind:value={value} class="slider" on:change={() => dispatch("change", { value })}>
 
 <style lang="postcss">  
     :global(input[type="range"]) {

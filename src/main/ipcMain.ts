@@ -2,6 +2,9 @@ import { BrowserWindow, ipcMain, systemPreferences, clipboard } from "electron"
 import type { IBoard } from "@common/interfaces/IBoard"
 import {
     copyFilesToAssetsDir,
+    createBoard,
+    getBoard,
+    getBoards,
     getData,
     getFilesDialog,
     getSettings,
@@ -9,6 +12,7 @@ import {
     mkBoardDataDir,
     setData,
     setSettings,
+    updateBoard,
 } from "./ipcFunctions"
 
 interface ipcSendReceive {
@@ -29,6 +33,11 @@ export const preloadChannels = [
     "getFilesDialog",
     "copyFilesToAssetsDir",
     "mkBoardDataDir",
+
+    "createBoard",
+    "getBoard",
+    "getBoards",
+    "updateBoard",
 ]
 
 /*
@@ -103,6 +112,32 @@ function mainIpcFunction(
                     return
                 }
                 resolve(await mkBoardDataDir(args[0]))
+                break
+
+            case "createBoard":
+                if (args.length < 1) {
+                    console.error("Tried to call createBoard with no value!")
+                    return
+                }
+                let op = await createBoard(args[0], args[1])
+                op ? resolve(true) : reject(op)
+                break
+            case "getBoard":
+                if (!args[0]) {
+                    console.error("Tried to call getBoards with no value!")
+                    return
+                }
+                resolve(await getBoard(args[0]))
+                break
+            case "getBoards":
+                resolve(await getBoards())
+                break
+            case "updateBoard":
+                if (args.length !== 2) {
+                    console.error("Tried to call updateBoard with no value!")
+                    return
+                }
+                resolve(await updateBoard(args[0], args[1]))
                 break
 
             case "clippy":

@@ -1,42 +1,47 @@
 # TODO:
 
+https://blog.avocode.com/4-must-know-tips-for-building-cross-platform-electron-apps-f3ae9c2bffff
+
 ### Menubr
-- Default mode always grid
-- grey out map viewmode, when enabled gets saved, icon normal color
-- lock mode
+
+-   Default mode always grid
+-   grey out map viewmode, when enabled gets saved, icon normal color
+-   lock mode
 
 ### Media types
-- URL (With optional preview?)
-- Image
-- Video (& GIFS)
-- 
+
+-   URL (With optional preview?)
+-   Image
+-   Video (& GIFS)
+-
 
 ### Media sources
-- File select
-- Drag and drop into window
-- Screenshot
-- URL embedd
-- URL download
-- CTRL-C/-V
+
+-   File select
+-   Drag and drop into window
+-   Screenshot
+-   URL embedd
+-   URL download
+-   CTRL-C/-V
 
 ### Grid view
+
+https://blog.stackfindover.com/masonry-grid-examples/
+https://codepen.io/kattixie/pen/bEYyZb
+
 #### Features
-- Drag and drop rearange (disable masonry for that to make it easy)
+
+-   Drag and drop rearange (disable masonry for that to make it easy)
+
+### Map view
+
+https://github.com/rozek/svelte-drag-and-drop-actions
 
 ### Synchronization
-- Github
-- Google drive
-- OneDrive?
 
-
-
-
-
-
-
-
-
-
+-   Github
+-   Google drive
+-   OneDrive?
 
 # ⚡ Vite + TypeScript + Svelte + Electron
 
@@ -52,15 +57,17 @@ Note: CSC_IDENTITY_AUTO_DISCOVERY is set to false by default to avoid the codesi
 
 Create a Project:
 
-- Clone this project directly.
-- If you use GitHub, click Use this template at the top of the page or [here](https://github.com/vanjmali/vite-typescript-svelte-electron/generate) (do not check include all branch)
+-   Clone this project directly.
+-   If you use GitHub, click Use this template at the top of the page or [here](https://github.com/vanjmali/vite-typescript-svelte-electron/generate) (do not check include all branch)
 
 Installation dependencies
 
 ```shell
 npm i
 ```
+
 Start local development
+
 ```shell
 # Use esbuild to compile the main process Typescript and run the application
 npm run dev
@@ -97,11 +104,11 @@ Use [two-package-structure](https://www.electron.build/tutorials/two-package-str
 
 ```
 
-app/                   Electron-Builder app directory and its build directory                
+app/                   Electron-Builder app directory and its build directory
 ├─ package.json        Production dependencies, all stored as dependencies (not devDependencies)
 dist/                  Electron-Builder package directory
 scripts/               Support scripts for development/build.
-src/                   
+src/
 ├─ common/             Common code
 ├─ main/               for main process
 ├─ renderer/           For renderer process

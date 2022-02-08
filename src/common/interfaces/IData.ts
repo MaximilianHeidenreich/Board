@@ -1,5 +1,7 @@
-import type { IBoard } from "./IBoard";
+import type { IBoard } from "./IBoard"
 
 export interface IData {
-    boards: IBoard[];
+    localBoardIds: {
+        id: string
+    }[]
 }

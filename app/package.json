@@ -1,12 +1,19 @@
 {
-  "name": "board",
-  "version": "0.1.0",
-  "license": "MIT",
-  "main": "index.js",
-  "devDependencies": {
-    "electron": "^11.3.0"
-  },
-  "dependencies": {
-    "fs-extra": "^10.0.0"
-  }
+    "name": "board",
+    "description": "A tool for creating beautiful moodboards.",
+    "version": "0.1.0",
+    "license": "MIT",
+    "author": "Maximilian Vincent Heidenreich <contact@maximilian-heidenreich.de> (https://maximilian-heidenreich.de)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MaximilianHeidenreich/Board.git"
+    },
+    "main": "index.js",
+    "devDependencies": {
+        "electron": "^11.3.0"
+    },
+    "dependencies": {
+        "fs-extra": "^10.0.0",
+        "md5-file": "^5.0.0"
+    }
 }

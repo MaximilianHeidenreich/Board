@@ -5,18 +5,25 @@
 
 import type { IData } from "@common/interfaces/IData"
 import type { ISettings } from "@common/interfaces/ISettings"
-import type { IBoard } from "@common/interfaces/IBoard"
+import {
+    ELoadedBoardStatus,
+    IBoard,
+    ILoadedBoard,
+} from "@common/interfaces/IBoard"
 import { SettingsDefault, DataDefault } from "@common/defaults"
 
 import { app, dialog } from "electron"
 import path from "path"
-import { copy, mkdirs } from "fs-extra"
+import { readdir } from "fs/promises"
+import { copy, mkdirs, readFileSync, writeFileSync } from "fs-extra"
 import md5File from "md5-file"
 import { setDb, readDb } from "@main/Store"
 import {
     EAssetType,
     fileExtensionToEAssetType,
 } from "@common/interfaces/IAsset"
+import { EBoardLayout } from "@common/interfaces/EBoardLayout"
+import type { IUserOverrides } from "@common/interfaces/IUserOverrides"
 
 let DATA_DIR = () => path.join(app.getPath("documents"), "Board")
 
@@ -137,9 +144,169 @@ export async function copyFilesToAssetsDir(
  * @returns true if successful, false if not
  */
 export async function mkBoardDataDir(board: IBoard): Promise<boolean> {
-    let boarDir = path.join(DATA_DIR(), "boards", board.id)
-    let assetsDir = path.join(boarDir, "assets")
-    await mkdirs(boarDir)
+    let boardDir = path.join(DATA_DIR(), "boards", board.id)
+    let assetsDir = path.join(boardDir, "assets")
+    await mkdirs(boardDir)
     await mkdirs(assetsDir)
+    return true
+}
+
+export async function createBoard(
+    id: string,
+    settings = { defaultLayout: EBoardLayout.grid, gridSize: 2, gridPadding: 2 }
+): Promise<boolean> {
+    let currBoards = await getBoards()
+
+    let nBoard = {
+        // Metadata
+        id,
+        createdAt: Date.now(),
+        modifiedAt: Date.now(),
+        title: `Untitled board #${currBoards.length + 1}`,
+        description: "An empty place for your ideas and inspiration.",
+        members: "",
+
+        // Settings
+        defaultLayout: settings.defaultLayout,
+        gridSize: settings.gridSize,
+        gridPadding: settings.gridPadding,
+        notesShown: false,
+
+        // Sync
+
+        // Content
+        headerImage: "",
+        entities: [],
+    }
+    let overrides: IUserOverrides = {
+        layout: settings.defaultLayout,
+        gridSize: settings.gridSize,
+        gridPadding: settings.gridPadding,
+    }
+
+    await mkBoardDataDir(nBoard)
+
+    let boardDir = path.join(DATA_DIR(), "boards", nBoard.id)
+    writeFileSync(
+        path.join(boardDir, "board.json"),
+        JSON.stringify(nBoard, undefined, 4)
+    )
+    writeFileSync(
+        path.join(boardDir, "userOverrides.json"),
+        JSON.stringify(overrides, undefined, 4)
+    )
+
+    // add to data
+    /*let data = await getData()
+    console.log("data: ")
+    console.log(data)
+
+    data?.localBoardIds.push({ id })
+    if (data) await setData(data)*/
+
+    return true
+}
+
+export async function getBoard(id: string): Promise<ILoadedBoard> {
+    let boardDir = path.join(DATA_DIR(), "boards", id)
+    // Load board.json
+    let b
+    try {
+        b = JSON.parse(
+            readFileSync(path.join(boardDir, "board.json")).toString()
+        )
+    } catch (error) {
+        console.error(`Corrupted board ${boardDir}?`)
+    }
+
+    // Load userOverrides.json
+    let o
+    try {
+        o = JSON.parse(
+            readFileSync(path.join(boardDir, "userOverrides.json")).toString()
+        )
+    } catch (error) {
+        console.error(`Corrupted board ${boardDir}?`)
+    }
+
+    return {
+        board: b,
+        userOverrides: o,
+        status: ELoadedBoardStatus.LOADED,
+    }
+}
+
+export async function getBoards(): Promise<ILoadedBoard[]> {
+    let boardsDir = path.join(DATA_DIR(), "boards")
+    let boardIds = (await readdir(boardsDir, { withFileTypes: true }))
+        .filter((d) => d.isDirectory())
+        .map((d) => d.name)
+    let boardsDirs = boardIds.map((id) => {
+        return { id, path: path.join(boardsDir, id) }
+    }) // TODO: Can be removed we only need ids
+
+    // Load every board
+    let boards = await Promise.all(
+        boardsDirs.map(async (d) => await getBoard(d.id))
+    )
+
+    return boards
+}
+
+export async function updateBoard(
+    id: string,
+    mutation: { board?: Object; userOverrides?: Object }
+): Promise<boolean> {
+    let boardDir = path.join(DATA_DIR(), "boards", id)
+    let board = await getBoard(id)
+
+    let b = mutation.board || board.board
+    let o = mutation.userOverrides || board.userOverrides
+
+    // Update last modified
+    // @ts-ignore
+    b.modifiedAt = Date.now()
+
+    /*console.trace(b)
+
+    if (mutation.board) {
+        Object.keys(mutation.board).forEach((k) => {
+            // @ts-ignore
+            b[k] = mutation[k]
+            /*if (k in b) b[k] = mutation[k]
+            else {
+                console.warn(
+                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
+                )
+                console.trace(
+                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
+                )
+            }
+        })
+    }
+    if (mutation.userOverrides) {
+        Object.keys(mutation.userOverrides).forEach((k) => {
+            // @ts-ignore
+            o[k] = mutation[k]
+            /*else {
+                console.warn(
+                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
+                )
+                console.trace(
+                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
+                )
+            }
+        })
+    }*/
+
+    writeFileSync(
+        path.join(boardDir, "board.json"),
+        JSON.stringify(b, undefined, 4)
+    )
+    writeFileSync(
+        path.join(boardDir, "userOverrides.json"),
+        JSON.stringify(o, undefined, 4)
+    )
+
     return true
 }

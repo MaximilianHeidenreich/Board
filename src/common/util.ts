@@ -16,3 +16,45 @@ export function uuidv4(): string {
 export function getFileExtension(file: string): string | undefined {
     return file.split(".").pop() || undefined
 }
+
+/**
+ * Converts month number into name.
+ *
+ * @param {*} month
+ */
+export function monthToName(month: number, short = true) {
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+    const monthNamesShort = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+    return short ? monthNamesShort[month] : monthNames[month]
+}
+
+export function arrayInsert<T>(array: T[], index: number, item: T): T[] {
+    array.splice(index, 0, item)
+    return array
+}

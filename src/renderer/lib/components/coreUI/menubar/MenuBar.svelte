@@ -10,7 +10,7 @@
 <style>
     nav {
         margin-top: var(--titlebar-height);
-        isolation: isolate;
-        z-index: 20;
+        /*isolation: isolate; */
+        z-index: 15;
     }
 </style>

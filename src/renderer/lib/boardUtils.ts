@@ -12,12 +12,16 @@ import { uuidv4 } from "@common/util"
 import { get } from "svelte/store"
 import {
     copyFilesToAssetsDir,
+    createBoard,
+    getBoard,
+    getBoards,
     getFilesDialog,
     mkBoardDataDir,
 } from "./ipcBridge"
 import { data } from "./store/dataStore"
 import { settings } from "./store/settingsStore"
-import { activeBoardId } from "./store/activeBoardStore"
+import { activeBoard, activeBoardId } from "./store/activeBoardStore"
+import { boards } from "./store/boardsStore"
 
 /**
  * Opens a board by given id.
@@ -25,11 +29,14 @@ import { activeBoardId } from "./store/activeBoardStore"
  * @returns true if successful, false if not
  */
 export async function openBoard(id: string): Promise<boolean> {
-    let d = await get(data)
-    let b = d.boards.find((e) => e.id === id)
+    //let d = await get(data)
+    //let b = d.boards.find((e) => e.id === id)
 
-    if (b) return openBoardRaw(b, true)
+    let board = await getBoard(id)
+
+    if (board) return openBoardRaw(board.board, true)
     else {
+        console.error("openBoard !board")
         return false
     }
 }
@@ -44,13 +51,12 @@ export function openBoardRaw(
     data: IBoard,
     updateLastOpened: boolean = false
 ): boolean {
-    // Useful when loading board from external source in future
     activeBoardId.set(data.id)
 
     if (!updateLastOpened) return true
 
     // Save board as last opened
-    settings.mutate({ openBoard: data.id })
+    settings.mutate({ openBoardId: data.id })
 
     return true
 }
@@ -59,38 +65,28 @@ export function openBoardRaw(
  * Adds a new, empty board.
  * @returns The id of the newly created board
  */
-export async function addNewBoard(): Promise<string> {
+export async function addNewBoard(autoOpen = false): Promise<string> {
     const id = uuidv4()
+    const sett = await get(settings)
 
-    let nBoard = {
-        // Metadata
-        id,
-        createdAt: Date.now(),
-        modifiedAt: Date.now(),
-        title: `Untitled board #${(await get(data).boards.length) + 1}`,
-        description: "An empty place for your ideas and inspiration.",
-        members: "",
-
-        // Settings
-        defaultLayout: EBoardLayout.grid,
-        gridSize: get(settings).userGridColumns,
-        gridPadding: get(settings).userGridPaddingFactor,
-        notesShown: false,
-
-        // Sync
-
-        // Content
-        headerImage: "",
-        entities: [],
-    }
-
-    data.update((d) => {
-        let dd = d
-        dd.boards.push(nBoard)
-        return dd
+    // TIDOO IPC
+    let res = await createBoard(id, {
+        defaultLayout: sett.defaultBoardLayout,
+        gridSize: sett.defaultBoardGridColumns,
+        gridPadding: sett.defaultBoardGridPaddingFactor,
     })
 
-    await mkBoardDataDir(nBoard)
+    // Update data store
+    /*let bs = (await getBoards()).map((e) => {
+        return e.board
+    })
+
+    console.log("boards:")
+    console.log(bs)*/
+
+    boards.set(await getBoards())
+
+    if (autoOpen) openBoard(id)
 
     return id
 }
@@ -105,11 +101,11 @@ export async function importLocalAssets(boardId: string): Promise<boolean> {
     console.log(assets)
 
     // Add entities for each asset.
-    data.update((d) => {
+    boards.update((d) => {
         assets.forEach((a) => {
-            let boardIndex = d.boards.indexOf(
+            let boardIndex = d.indexOf(
                 // @ts-ignore
-                d.boards.find((b) => b.id === boardId)
+                d.find((b) => b.board.id === boardId)
             )
             if (boardIndex < 0) {
                 console.trace("null board") //TODO: Add error
@@ -129,13 +125,35 @@ export async function importLocalAssets(boardId: string): Promise<boolean> {
             }
 
             if (entityAsset) {
-                let entity: IEntity = newIEntity(a.assetType, entityAsset)
-                d.boards[boardIndex].entities.push(entity)
+                let entity: IEntity = newIEntity({
+                    assetType: a.assetType,
+                    asset: entityAsset,
+                    gridPosition: d[boardIndex].board.entities.length + 1,
+                })
+                d[boardIndex].board.entities.push(entity)
             } else {
                 console.trace("No entity asset! should not happen!")
             }
         })
         return d
+    })
+
+    // Reload view
+    {
+        let b = boards.getById(boardId)
+        if (b) activeBoard.set(b)
+    }
+
+    return true
+}
+
+export async function removeEntityFromActive(
+    entityId: string
+): Promise<boolean> {
+    // Remove from state
+    activeBoard.update((v) => {
+        v.board.entities = v.board.entities.filter((e) => e.id !== entityId)
+        return v
     })
 
     return true

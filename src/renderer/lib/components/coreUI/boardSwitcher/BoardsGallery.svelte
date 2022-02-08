@@ -1,6 +1,6 @@
 <script lang="ts">
     import { addNewBoard } from "@renderer/lib/boardUtils";
-import { data } from "@renderer/lib/store/dataStore";
+import { boards } from "@renderer/lib/store/boardsStore";
 
     import ThemedElement from "../ThemedElement.svelte";
     import BoardCard from "./BoardCard.svelte";
@@ -24,7 +24,7 @@ import { data } from "@renderer/lib/store/dataStore";
     </div>-->
 
     <div id="content">
-        <div class="add-board" on:click={addNewBoard}>
+        <div class="add-board" on:click={() => addNewBoard(true)}>
             <div class="flex flex-col items-center">
                 <ThemedElement>
                     <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -37,10 +37,10 @@ import { data } from "@renderer/lib/store/dataStore";
                 <p>Add board</p>
             </div>
         </div>
-        {#if $data && $data.boards}
-            {#each $data.boards as board}
+        {#if $boards}
+            {#each $boards as board}
                 <BoardCard
-                    board={board}/>
+                    board={board.board}/>
             {/each}
         {/if}
     </div>

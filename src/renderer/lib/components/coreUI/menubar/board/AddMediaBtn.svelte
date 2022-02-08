@@ -1,32 +1,30 @@
 <script>
-    import Tooltip from "@renderer/lib/components/Tooltip.svelte";
-    import Popover from "@renderer/lib/components/Popover.svelte";
-    import ThemedElement from "@renderer/lib/components/coreUI/ThemedElement.svelte";
-    import ListButton from "@renderer/lib/components/ListButton.svelte";
-    import { importLocalAssets } from "@renderer/lib/boardUtils";
-    import { get } from "svelte/store";
-    import { activeBoardId } from "@renderer/lib/store/activeBoardStore";
+    import Tooltip from "@components/Tooltip.svelte";
+    import Popover from "@components/Popover.svelte";
+    import ThemedElement from "@components/coreUI/ThemedElement.svelte";
+    import ListButton from "@components/coreUI/buttons/ListButton.svelte";
+    import { importLocalAssets } from "@lib/boardUtils";
+    import { activeBoardId } from "@lib/store/activeBoardStore";
+    import IconPlus from "../../icons/IconPlus.svelte";
+import Button from "../../buttons/Button.svelte";
+import ToggleSwitch from "../../form/ToggleSwitch.svelte";
+import AddFromUrlModal from "./AddFromURLModal.svelte";
 
+   
 </script>
 
 <Popover padding={false} position="b">
     <Tooltip slot="content">
         <button slot="content">
-            <ThemedElement>
-                <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path xmlns="http://www.w3.org/2000/svg" d="M12 4C12.5523 4 13 4.44772 13 5V11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H13V19C13 19.5523 12.5523 20 12 20C11.4477 20 11 19.5523 11 19V13H5C4.44772 13 4 12.5523 4 12C4 11.4477 4.44772 11 5 11H11V5C11 4.44772 11.4477 4 12 4Z" fill="#fff"></path>
-                </svg>
-                <svg slot="light" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path xmlns="http://www.w3.org/2000/svg" d="M12 4C12.5523 4 13 4.44772 13 5V11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H13V19C13 19.5523 12.5523 20 12 20C11.4477 20 11 19.5523 11 19V13H5C4.44772 13 4 12.5523 4 12C4 11.4477 4.44772 11 5 11H11V5C11 4.44772 11.4477 4 12 4Z" fill="#0D0D0D"></path>
-                </svg>
-            </ThemedElement>
+            <IconPlus/> 
         </button>
         <p slot="tooltip">Add media</p>
     </Tooltip>
     <div slot="popover" class="w-fit">
+        {#if true}
         <ul class="h-btn-list">
-            <li on:click={async () => importLocalAssets($activeBoardId)}>
-                <ListButton>
+            <li>
+                <ListButton on:click={async () => importLocalAssets($activeBoardId)}>
                     <div class="w-full flex gap-5 justify-between items-center">
                         <p>Add from File</p>
                         <svg fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +34,7 @@
                 </ListButton>
             </li>
             <li>
-                <ListButton>
+                <ListButton on:click={() => {}}>
                     <div class="w-full flex gap-5 justify-between items-center">
                         <p>Add from URL</p>
                         <svg fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -46,5 +44,11 @@
                 </ListButton>
             </li>
         </ul>
+        {:else}
+        <AddFromUrlModal/>
+        {/if}
     </div>
 </Popover>
+
+<style lang="postcss">
+</style>

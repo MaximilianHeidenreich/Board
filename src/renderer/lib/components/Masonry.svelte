@@ -21,7 +21,7 @@
 <div bind:this={masonryElement} 
      class={`__grid--masonry ${stretchFirst ? '__stretch-first' : ''}`}
      style={`--grid-gap: ${gridGap}; --columns: ${columns}; --col-width: ${colWidth};`}
-     >
+     {...$$restProps}>
   <slot></slot>
 </div>
 
@@ -140,7 +140,8 @@
     
   }
   :global(.__grid--masonry > *) { 
-    align-self: start 
+    align-self: start;
+    
   }
   :global(.__grid--masonry.__stretch-first > *:first-child) { 
     grid-column: 1/ -1;

@@ -1,5 +1,6 @@
 import type { IEntity } from "@common/interfaces/IEntity"
 import type { EBoardLayout } from "./EBoardLayout"
+import type { IUserOverrides } from "./IUserOverrides"
 
 export interface IBoard {
     // Metadata
@@ -21,4 +22,14 @@ export interface IBoard {
     // Content
     headerImage: string
     entities: IEntity[]
+}
+
+export enum ELoadedBoardStatus {
+    "LOADED",
+    "CORRUPTED",
+}
+export interface ILoadedBoard {
+    board: IBoard
+    userOverrides: IUserOverrides
+    status: ELoadedBoardStatus
 }

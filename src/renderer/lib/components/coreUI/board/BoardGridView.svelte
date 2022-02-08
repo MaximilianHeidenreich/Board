@@ -3,45 +3,50 @@
 
     import { settings } from "@renderer/lib/store/settingsStore";
 
-    import CommentsPanel from "./CommentsPanel.svelte";
+    import { fade } from "svelte/transition";
+    import CommentsPanel from "./CommentsSummaryPanel.svelte";
     import Masonry from "@components/Masonry.svelte";
     import BoardEntity from "./entities/BoardEntity.svelte";
     import { data } from "@renderer/lib/store/dataStore";
     import { activeBoard } from "@renderer/lib/store/activeBoardStore";
+    import BoardGridRearanger from "./rearranger/BoardGridRearanger.svelte";
+import { boards } from "@renderer/lib/store/boardsStore";
 
     // State
     export let  board: IBoard,
-                notesVisible = false;
-    
-    $: gridGap = ($settings.gridPaddingValue * $settings.userGridPaddingFactor).toString() + $settings.gridPaddingUnit;
+                notesVisible = false,
+                rearrange = false
+
+    //$: entities = $boards.find(e => e.board.id === board.id)?.board.entities.sort((a, b) => a.gridPosition - b.gridPosition)
+    $: entities = $boards.find(e => e.board.id === board.id)?.board.entities
+    $: gridGap = ($settings.defaultBoardGridPaddingValue * $activeBoard.userOverrides.gridPadding).toString() + $settings.defaultBoardGridPaddingUnit;
+
 </script>
 
 <div id="board">
     <CommentsPanel visible={notesVisible}/>
     <div id="content">
-        {#key $data}
-            {#key $activeBoard}
-                <Masonry stretchFirst={false} gridGap={gridGap} columns={$settings.userGridColumns} colWidth="1fr">
-                    {#each board.entities as entity}
-                        <BoardEntity
-                            entity={entity}
-                            />
-                    {/each}
-                </Masonry>
-            {/key}
-        {/key}
-        <!--<div class="py-32 flex gap-5 justify-center items-center">
-            <p>
-                <strong>Board</strong> v1.0.0
-                <span class="mx-2">•</span>
-                Made with 
-                <ThemedElement>
-                    <span slot="dark">🤍</span>
-                    <span slot="light">🖤</span>
-                </ThemedElement>
-                <span class="ml-1">by <a href="https://www.maximilian-heidenreich.de">Maximilian Vincent Heidenreich</a></span>
-            </p>
-        </div>-->
+        {#if entities}
+            {#if !rearrange}
+                {#key $activeBoard.board}
+                    <Masonry items={entities} stretchFirst={false} gridGap={gridGap} columns={$activeBoard.userOverrides.gridSize} colWidth="1fr">
+                        {#each entities as entity}
+                            <BoardEntity
+                                entity={entity}
+                                on:onRearrange={() => rearrange = true}
+                                />
+                        {/each}
+                    </Masonry>
+                {/key}
+            {:else}
+                {#key $boards}
+                    <BoardGridRearanger 
+                        entities={entities}
+                        on:doneRearrange={() => rearrange = false}
+                        />
+                {/key}
+            {/if}
+        {/if}
     </div>
 </div>
 

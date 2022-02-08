@@ -9,8 +9,8 @@
 
 <style>
     main {
-        isolation: isolate;
-        z-index: 0;
+        /*isolation: isolate;*/
+        z-index: 15;
         /*min-height: var(--content-height);
         max-height: var(--content-height);*/
         position: absolute;

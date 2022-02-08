@@ -1,12 +1,22 @@
 import { app, BrowserWindow, systemPreferences } from "electron"
+import { mkdirs } from "fs-extra"
 import path from "path"
 import { pathToFileURL } from "url"
 import appIpcMain from "./ipcMain"
 
 const isDevelopment = process.env.NODE_ENV === "development"
 
+function createDataDir() {
+    const DATA_DIR_STRUCTURE = ["boards"]
+    DATA_DIR_STRUCTURE.forEach((p) =>
+        mkdirs(path.join(app.getPath("documents"), "Board", p))
+    )
+}
+createDataDir()
+
 function createWindow() {
     const win = new BrowserWindow({
+        title: "Board",
         width: 1280,
         height: 720,
         minWidth: 760,

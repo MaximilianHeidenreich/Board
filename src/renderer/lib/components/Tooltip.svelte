@@ -25,7 +25,7 @@
 
 <style lang="postcss">
     .tooltip-wrapper {
-        isolation: isolate;
+        /* isolation: isolate; */
     }
     #tooltip {
         @apply inline-block absolute;

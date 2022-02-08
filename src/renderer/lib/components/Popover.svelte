@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import { quartInOut } from "svelte/easing";
     import { darkMode } from "@store/darkModeStore";
@@ -7,23 +8,26 @@
     export let position: "t" | "tl" | "tr" | "rt" | "r" | "rb" | "b" | "bl" | "br" | "l" | "lt" | "lb" = "b"
 
     // STATE
-    let opened = false;
+    export let opened = false;
 
 
     // API
+    const dispatch = createEventDispatcher()
     function open() {
         opened = true
+        dispatch("changeState", { opened })
     }
     function close() {
         opened = false
+        dispatch("changeState", { opened })
     }
 </script>
 
-<div>
+<div class="z-50">
     {#if opened}
     <div class="popover-background" on:click|preventDefault={close} in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}></div>
     {/if}
-    <div class="popover-wrapper relative z-10" class:dark={$darkMode} on:click={open}>
+    <div class="popover-wrapper relative" class:dark={$darkMode} on:click={open}>
         <slot name="content"/>
         {#if opened}
         <div id="popover" class:padding={padding} class="{position}"  in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}>
@@ -43,6 +47,7 @@
         @apply bg-slate-50 opacity-40;
     }
     .popover-wrapper {
+        z-index: 100;
         isolation: isolate;
     }
     .popover-wrapper.dark #popover {

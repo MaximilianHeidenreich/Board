@@ -3,8 +3,9 @@
  *
  */
 
+import { EBoardLayout } from "@common/interfaces/EBoardLayout"
 import type { EAssetType } from "@common/interfaces/IAsset"
-import type { IBoard } from "@common/interfaces/IBoard"
+import type { IBoard, ILoadedBoard } from "@common/interfaces/IBoard"
 import type { IData } from "@common/interfaces/IData"
 import type { ISettings } from "@common/interfaces/ISettings"
 
@@ -96,5 +97,30 @@ export async function copyFilesToAssetsDir(
 export async function mkBoardDataDir(board: IBoard): Promise<boolean> {
     return (
         await window.main.get<boolean>("mkBoardDataDir", undefined, board)
+    )[0]
+}
+
+export async function createBoard(
+    id: string,
+    settings = { defaultLayout: EBoardLayout.grid, gridSize: 2, gridPadding: 2 }
+): Promise<boolean> {
+    return (
+        await window.main.get<boolean>("createBoard", undefined, id, settings)
+    )[0]
+}
+
+export async function getBoard(id: string): Promise<ILoadedBoard> {
+    return (await window.main.get<ILoadedBoard>("getBoard", undefined, id))[0]
+}
+export async function getBoards(): Promise<ILoadedBoard[]> {
+    return (await window.main.get<ILoadedBoard[]>("getBoards"))[0]
+}
+
+export async function updateBoard(
+    id: string,
+    mutation: { board?: Object; userOverrides?: Object }
+): Promise<boolean> {
+    return (
+        await window.main.get<boolean>("updateBoard", undefined, id, mutation)
     )[0]
 }

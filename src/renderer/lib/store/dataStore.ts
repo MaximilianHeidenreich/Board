@@ -3,6 +3,7 @@ import type { IData } from "@common/interfaces/IData"
 import { get } from "svelte/store"
 import { createModel } from "sveltemodel/Model"
 import { getData, setData } from "../ipcBridge"
+import { boards } from "./boardsStore"
 
 export let data = createModel<IData>({
     saveFn: async (o) => {
@@ -15,14 +16,3 @@ export let data = createModel<IData>({
     },
     loadOnCreate: true,
 })
-
-export function addBoard(board: IBoard) {
-    data.update((v) => {
-        v.boards.push(board)
-        return v
-    })
-}
-
-export async function getBoard(id: string): Promise<IBoard | undefined> {
-    return (await get(data)).boards.find((b) => b.id === id)
-}

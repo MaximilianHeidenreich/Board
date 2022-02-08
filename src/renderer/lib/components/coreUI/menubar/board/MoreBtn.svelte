@@ -1,11 +1,13 @@
 <script>
-import ListButton from "@renderer/lib/components/ListButton.svelte";
+import ListButton from "@renderer/lib/components/coreUI/buttons/ListButton.svelte";
 
 
 import Popover from "@renderer/lib/components/Popover.svelte";
 import Tooltip from "@renderer/lib/components/Tooltip.svelte";
 import { getVersion } from "@renderer/lib/ipcBridge";
 import { darkMode } from "@renderer/lib/store/darkModeStore";
+import { router } from "tinro";
+import IconMore from "../../icons/IconMore.svelte";
 import ThemedElement from "../../ThemedElement.svelte";
 import ThemeToggle from "../ThemeToggle.svelte";
 
@@ -15,25 +17,14 @@ import ThemeToggle from "../ThemeToggle.svelte";
 <Popover padding={false} position="br">
     <Tooltip slot="content">
         <button slot="content">
-            <ThemedElement>
-                <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 12C10 13.1046 10.8954 14 12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12Z" fill="#fff"></path>
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 6C10 7.10457 10.8954 8 12 8C13.1046 8 14 7.10457 14 6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6Z" fill="#fff"></path>
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 18C10 19.1046 10.8954 20 12 20C13.1046 20 14 19.1046 14 18C14 16.8954 13.1046 16 12 16C10.8954 16 10 16.8954 10 18Z" fill="#fff"></path>
-                </svg>
-                <svg slot="light" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 12C10 13.1046 10.8954 14 12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12Z" fill="#0D0D0D"></path>
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 6C10 7.10457 10.8954 8 12 8C13.1046 8 14 7.10457 14 6C14 4.89543 13.1046 4 12 4C10.8954 4 10 4.89543 10 6Z" fill="#0D0D0D"></path>
-                    <path xmlns="http://www.w3.org/2000/svg" d="M10 18C10 19.1046 10.8954 20 12 20C13.1046 20 14 19.1046 14 18C14 16.8954 13.1046 16 12 16C10.8954 16 10 16.8954 10 18Z" fill="#0D0D0D"></path>
-                </svg>
-            </ThemedElement>
+            <IconMore/>
         </button>
         <p slot="tooltip">More</p>
     </Tooltip>
     <div slot="popover" class="w-fit">
         <ul class="h-btn-list">
-            <li on:click={ () => { darkMode.update(v => !v); }}>
-                <ListButton>
+            <li>
+                <ListButton on:click={() => darkMode.update(v => !v)}>
                     <div class="w-full flex gap-5 justify-between items-center">
                         <p>
                             {#if $darkMode}
@@ -54,12 +45,9 @@ import ThemeToggle from "../ThemeToggle.svelte";
                 </ListButton>
             </li>
             <li>
-                <ListButton>
-                    <div class="w-full flex gap-5 justify-between items-center">
-                        <p>Add from URL</p>
-                        <svg fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-                            <path xmlns="http://www.w3.org/2000/svg" d="M8 8C5.75228 8 4 9.75228 4 12C4 14.2477 5.75228 16 8 16H10C10.5523 16 11 16.4477 11 17C11 17.5523 10.5523 18 10 18H8C4.64772 18 2 15.3523 2 12C2 8.64772 4.64772 6 8 6H10C10.5523 6 11 6.44772 11 7C11 7.55228 10.5523 8 10 8H8ZM13 7C13 6.44772 13.4477 6 14 6H16C19.3523 6 22 8.64772 22 12C22 15.3523 19.3523 18 16 18H14C13.4477 18 13 17.5523 13 17C13 16.4477 13.4477 16 14 16H16C18.2477 16 20 14.2477 20 12C20 9.75228 18.2477 8 16 8H14C13.4477 8 13 7.55228 13 7ZM7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z" fill="#0D0D0D"></path>
-                        </svg>
+                <ListButton on:click={() => router.goto("/dev")}>
+                    <div class="w-full flex gap-5 justify-center items-center">
+                        <p>Dev tools</p>
                     </div>
                 </ListButton>
             </li>

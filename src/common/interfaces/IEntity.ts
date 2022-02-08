@@ -7,6 +7,9 @@ export interface IEntity {
     modifiedAt: number
     id: string
 
+    // Grid
+    gridPosition: number
+
     // Asset
     assetType: EAssetType
     asset: IAsset
@@ -15,22 +18,24 @@ export interface IEntity {
     locX: number
     locY: number
 }
-export let newIEntity = (
-    assetType: EAssetType,
-    asset: IAsset,
-    locX = 0,
-    locY = 0,
-    createdAt?: number,
-    modifiedAt?: number,
+export let newIEntity = (o: {
+    assetType: EAssetType
+    asset: IAsset
+    locX?: number
+    locY?: number
+    createdAt?: number
+    modifiedAt?: number
     id?: string
-): IEntity => {
+    gridPosition?: number
+}): IEntity => {
     return {
-        createdAt: createdAt || Date.now(),
-        modifiedAt: modifiedAt || Date.now(),
-        id: id || uuidv4(),
-        assetType,
-        asset,
-        locX,
-        locY,
+        createdAt: o.createdAt || Date.now(),
+        modifiedAt: o.modifiedAt || Date.now(),
+        id: o.id || uuidv4(),
+        gridPosition: o.gridPosition || 0,
+        assetType: o.assetType,
+        asset: o.asset,
+        locX: o.locX || 0,
+        locY: o.locY || 0,
     }
 }

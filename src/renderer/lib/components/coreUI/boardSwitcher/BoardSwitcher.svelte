@@ -3,10 +3,14 @@
     import { fade } from "svelte/transition";
 
     import { switcherOpened } from "@renderer/lib/store/switcherOpenedStore";
-    import BoardsGallery from "../home/BoardsGallery.svelte";
+    import BoardsGallery from "./BoardsGallery.svelte";
+import { boards } from "@renderer/lib/store/boardsStore";
+import { onMount } from "svelte";
 
-    // STATE
-
+    // INIT
+    onMount(() => {
+        boards.load()
+    })
 
 </script>
 
@@ -21,8 +25,10 @@
             </div>
         </div>
         <div class="h-full">
+            {#key boards}
             <BoardsGallery
                 />
+            {/key}
         </div>
     </div>
 </div>

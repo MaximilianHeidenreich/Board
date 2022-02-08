@@ -3,16 +3,23 @@
     import { get } from "svelte/store";
     import { onDestroy, onMount } from "svelte";
 
-    import { darkMode } from "./lib/store/darkModeStore";
-    import { data } from "./lib/store/dataStore";
-    import { settings } from "./lib/store/settingsStore";
-
     import Dropzone from "./lib/components/coreUI/board/Dropzone.svelte";
-    import { getFilesDialog, getVersion } from "@renderer/lib/ipcBridge";
     import { addNewBoard, importLocalAssets, openBoard, openBoardRaw } from "./lib/boardUtils";
     import Board from "./lib/pages/Board.svelte";
     import BoardSwitcher from "./lib/components/coreUI/boardSwitcher/BoardSwitcher.svelte";
-import { activeBoard, activeBoardId } from "./lib/store/activeBoardStore";
+    import { Route } from "tinro";
+    import Dev from "./lib/pages/Dev.svelte";
+    import DevIcons from "./lib/pages/dev/DevIcons.svelte";    
+    import theme from "./lib/theme";
+
+    // STORES ! Loading order is important
+    import { darkMode } from "./lib/store/darkModeStore";
+    import { data } from "./lib/store/dataStore";
+    import { settings } from "./lib/store/settingsStore";
+    import { boards } from "./lib/store/boardsStore";
+    import { activeBoard, activeBoardId } from "./lib/store/activeBoardStore";
+import { bufferBusy } from "./lib/store/bufferBusy";
+import { getVersion } from "./lib/ipcBridge";
 
 
     // State
@@ -32,71 +39,106 @@ import { activeBoard, activeBoardId } from "./lib/store/activeBoardStore";
     // Loat last opened board / create new if none exist
     onMount(async () => {
         
+        await settings.initialized
+        await boards.initialized
+        // > 0 boards -> Load last opened or latest if not found
+        let bs = get(boards)
+        let s = get(settings)
+        if (bs?.length > 0) {
+            //let lastBoard = d.boards.find(e => e.id === )
+            //lastBoard = lastBoard || d.boards[0] // TODO: handle deleted last board &  get latest by timestamp
+            openBoard(s.openBoardId || bs[0].board.id)
+        }
+        // <= 0 board -> Create new and load
+        else {
+            let id = await addNewBoard()
+            bs = get(boards)  // TODO: ???
+            await openBoard(id)
+        }
+
+        //setTimeout(async () => await activeBoard.load(), 1000)
+
+        console.log("Settings:");
+        console.log(get(settings));
+        console.log("Data:");
+        console.log(get(data));
+        console.log("Boards:");
+        console.log(get(boards));
+        console.log("Active Board:");
+        console.log(get(activeBoard));
         
         /*setTimeout(async () => {
             let id = await addNewBoard()
             openBoard(id)
         }, 1000)**/
-        setTimeout(async () => {
-            // > 0 boards -> Load last opened or latest if not found
-            let d = await get(data)
-            let s = await get(settings)
-            if (d.boards.length > 0) {
-                let lastBoard = d.boards.find(e => e.id === s.openBoard)
-                lastBoard = lastBoard || d.boards[0] // TODO: get latest by timestamp
-                openBoardRaw(lastBoard, true)
-            }
-            // <= 0 board -> Create new and load
-            else {
-                let id = await addNewBoard()
-                d = await get(data)
-                await openBoard(id)
-            }
-        }, 500) // TODO!: Replace with subscrbe to data store
+        /*setTimeout(async () => {
+
+            console.log("Settings:");
+            console.log(await get(settings));
+            console.log("Data:");
+            console.log(await get(data));
+            console.log("Boards:");
+            console.log(await get(boards));
+            
+        }, 900)*/ // TODO!: Replace with subscrbe to data store
     })
 
-    let src = "";
-    async function lDimg() {
-        let res = (await getFilesDialog());
-        console.log(res.filePaths);
-        
-        src = res.filePaths[0]
-    }
-    
-    
+    activeBoardId.subscribe((v) => {
+        activeBoard.set(boards.getById(v))
+    })
+
 </script>
 
-<div id="titlebar" class="flex justify-end gap-5 text-right">
-    {JSON.stringify($activeBoardId)}
-</div>
-<Dropzone/>
-<div class="app-wrapper" class:dark={$darkMode}>
-    <!--<div class="bg-red-300 flex-grow-0 flex-shrink-0" style="min-height: var(--titlebar-height);">titlebar</div>-->
-    <!--<Router
-        {routes}
-        on:conditionsFailed={conditionsFailed}
-        restoreScrollState={false}
-    />-->
-    {#if $activeBoard}
-        {#key $activeBoard}
-        <Board
-            board={$activeBoard}/>
-        {/key}
-        <div class="mt-72">
-            <button on:click={() => importLocalAssets($activeBoardId)}>new</button>
-        </div>
-        <BoardSwitcher/>
-    {:else}
-    <div class="loader-wrapper flex justify-center items-center">
-        <div class="flex flex-col items-center gap-5">
-            <div class="loader"></div>
-            <p>Loading...</p>
-        </div>
+<div id="root" style="--textBase: {theme.colors.textBase}; 
+                        --textBaseDark: {theme.colors.textBaseDark}; 
+                        --textLight: {theme.colors.textLight}; 
+                        --textLightDark: {theme.colors.textLightDark};
+                        --textMuted: {theme.colors.textMuted};
+                        --textMutedDark: {theme.colors.textMutedDark}">
+    <div id="titlebar" class="flex justify-end gap-3">
+        <p class="muted mx-2"><small>v{#await getVersion() then version}{version}{/await}</small></p>
+        <p class="muted mx-2"><small>Active Board ID: {$activeBoardId}</small></p>
+        <p class="muted mx-2"><small>BufferBusy: {#if $bufferBusy}<span class="text-rose-500">BUSY</span>{:else}<span class="text-lime-500">CLEAR</span>{/if}</small></p>
     </div>
-    {/if}
+    <!--<Dropzone/>-->
+    <div class="app-wrapper" class:dark={$darkMode}>
+        <!--<div class="bg-red-300 flex-grow-0 flex-shrink-0" style="min-height: var(--titlebar-height);">titlebar</div>-->
+        <!--<Router
+            {routes}
+            on:conditionsFailed={conditionsFailed}
+            restoreScrollState={false}
+        />-->
+        {#if $activeBoard}
+                {#key $activeBoardId}
+                    <Board
+                        board={$activeBoard.board}
+                        />
+                {/key}
+                <BoardSwitcher/>
+            {:else}
+            <div class="loader-wrapper flex justify-center items-center">
+                <div class="flex flex-col items-center gap-5">
+                    <div class="loader"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+            {/if}
+        <Route path="/">
+            
+        </Route>
+        <Route path="/dev">
+            <Dev/>
+        </Route>
+        <Route path="/dev/icons">
+            <DevIcons/>
+        </Route>
+    </div>
 </div>
 
 <style lang="postcss">
+    :global(.muted) {
+        color: var(--textMuted)
+    }
     .app-wrapper {
         width: 100%;
         max-height: 100vh;

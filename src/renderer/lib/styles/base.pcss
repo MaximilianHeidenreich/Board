@@ -20,6 +20,7 @@ main {
     padding: 0;
     height: 100%;
     line-height: 1.5;
+    font: caption;
 }
 #app {
     height: 100vh;
@@ -72,6 +73,9 @@ main {
 }
 
 /* Typography */
+.txt-muted {
+    color: var(--textMuted);
+}
 h1 {
     @apply text-3xl font-bold;
 }
@@ -90,11 +94,17 @@ h5 {
 
 /* From & Inputs */
 input {
+    background: transparent;
+}
+.form-control {
+    @apply my-5;
+}
+/*input {
     @apply w-full py-1 bg-transparent border-b-2 border-slate-200 outline-none focus:border-slate-300;
 }
 input.readonly {
     @apply border-0;
-}
+}*/
 
 ul.h-btn-list li:first-child button {
     @apply rounded-t-lg;

@@ -1,11 +1,12 @@
 {
     "name": "board",
+    "description": "A tool for creating beautiful moodboards.",
     "version": "0.1.0",
     "license": "MIT",
-    "author": "Maximilian Vincent Heidenreich <contact@maximilian-heidenreich.de> (https://maximilian-heidenreich.de)"
+    "author": "Maximilian Vincent Heidenreich <contact@maximilian-heidenreich.de> (https://maximilian-heidenreich.de)",
     "repository": {
         "type": "git",
-        "url": "https://github.com/whatever/testing.git"
+        "url": "https://github.com/MaximilianHeidenreich/Board.git"
     },
     "scripts": {
         "dev": "cross-env NODE_ENV=development elecrun --vite --preload preload.ts",
@@ -21,6 +22,7 @@
         "postinstall": "electron-builder install-app-deps",
         "prettier": "prettier -w ."
     },
+    "postinstall": "electron-builder install-app-deps",
     "devDependencies": {
         "@sveltejs/vite-plugin-svelte": "^1.0.0-next.10",
         "@types/node": "^15.12.1",
@@ -36,6 +38,7 @@
         "sass": "^1.49.0",
         "svelte": "^3.38.2",
         "svelte-preprocess": "^4.7.3",
+        "sveltemodel": "^1.1.0",
         "tailwindcss": "^3.0.15",
         "tinro": "^0.6.12",
         "ts-node": "^10.0.0",
@@ -45,7 +48,6 @@
     },
     "dependencies": {
         "fs-extra": "^10.0.0",
-        "md5-file": "^5.0.0",
-        "sveltemodel": "^1.0.2"
+        "md5-file": "^5.0.0"
     }
 }
