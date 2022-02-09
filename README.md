@@ -2,6 +2,16 @@
 
 https://blog.avocode.com/4-must-know-tips-for-building-cross-platform-electron-apps-f3ae9c2bffff
 
+-   Auto updater -> probably custom package
+-   WYSIWYG -> https://svelte.dev/tutorial/tick
+
+## Logging
+
+-   https://github.com/adamschwartz/log/blob/master/log.js
+-   https://github.com/debug-js/debug
+-   Pass to mainIPC and writeFile
+-   Wrpper arround common llib?
+
 ### Menubr
 
 -   Default mode always grid
@@ -28,10 +38,6 @@ https://blog.avocode.com/4-must-know-tips-for-building-cross-platform-electron-a
 
 https://blog.stackfindover.com/masonry-grid-examples/
 https://codepen.io/kattixie/pen/bEYyZb
-
-#### Features
-
--   Drag and drop rearange (disable masonry for that to make it easy)
 
 ### Map view
 

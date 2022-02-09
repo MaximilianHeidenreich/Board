@@ -1,9 +1,11 @@
 <script lang="ts">
-    import { addNewBoard } from "@renderer/lib/boardUtils";
-import { boards } from "@renderer/lib/store/boardsStore";
-
+    import type { ILoadedBoard } from "@common/interfaces/IBoard";
+    import { addNewBoard } from "@renderer/lib/store/boardsStore";
     import ThemedElement from "../ThemedElement.svelte";
     import BoardCard from "./BoardCard.svelte";
+
+    // STATE
+    export let boards: ILoadedBoard[]
 
 </script>
 
@@ -37,8 +39,8 @@ import { boards } from "@renderer/lib/store/boardsStore";
                 <p>Add board</p>
             </div>
         </div>
-        {#if $boards}
-            {#each $boards as board}
+        {#if boards}
+            {#each boards as board}
                 <BoardCard
                     board={board.board}/>
             {/each}

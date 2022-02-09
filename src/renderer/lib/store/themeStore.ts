@@ -1,4 +1,7 @@
-export default {
+import { writable } from "svelte/store"
+
+export let themeStore = writable({
+    darkMode: false,
     colors: {
         textBase: "#000",
         textBaseDark: "#fff",
@@ -9,4 +12,4 @@ export default {
         textMuted: "#999",
         textMutedDark: "",
     },
-}
+})

@@ -1,5 +1,5 @@
-import type { IPromiseRejection } from "@common/interfaces/IPromises"
-import { derived, writable } from "svelte/store"
+import { CancelledError, Rejection, UncaughtError } from "@common/Errors"
+import { derived, get, writable } from "svelte/store"
 
 interface BufferTask {
     id: number
@@ -37,7 +37,7 @@ export function onAfterBusy(action: (...args: any[]) => any): void {
  * @throws { reason: "bufferedAction_cancelled" | valFromAction }
  */
 export function createBufferedAction<T>(
-    action: (...args: any[]) => Promise<T>,
+    action: (...args: any[]) => T | Rejection,
     bufferTimeout = 3000
 ) {
     let busy = false
@@ -67,7 +67,7 @@ export function createBufferedAction<T>(
             await t.promise
         } catch (_) {
             // prevent memory leak
-            throw { reason: "bufferedAction_cancelled" }
+            return new CancelledError().toRejection()
         }
         try {
             let res = await action(...args)
@@ -76,7 +76,7 @@ export function createBufferedAction<T>(
             return res
         } catch (e) {
             // prevent memory leak
-            throw e
+            return new UncaughtError(e)
         }
     }
 }
@@ -92,7 +92,7 @@ export function createBufferedAction<T>(
     let a: {
         promise: Promise<any> | undefined
         resolve: (_: any) => void
-        cancel: (_: IPromiseRejection) => void
+        cancel: (_: PromiseRejection) => void
     } = {
         promise: undefined,
         resolve: (_: any) => void 0,
@@ -146,8 +146,8 @@ export function createBufferedAction<T>(
 ) => {
     let timeout: number | undefined
     let runPResolver: (value: T) => void
-    let runPRejecter: (rejection: IPromiseRejection) => void
-    let runP: Promise<T | IPromiseRejection>
+    let runPRejecter: (rejection: PromiseRejection) => void
+    let runP: Promise<T | PromiseRejection>
 
     // Wrapped action
     return {
@@ -155,7 +155,7 @@ export function createBufferedAction<T>(
 
 
             const run = (() => {
-                runP = new Promise<T | IPromiseRejection>((resolve, reject) => {
+                runP = new Promise<T | PromiseRejection>((resolve, reject) => {
                     runPResolver = resolve
                     runPRejecter = reject
                 })

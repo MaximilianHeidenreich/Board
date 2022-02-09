@@ -28,8 +28,13 @@ export enum ELoadedBoardStatus {
     "LOADED",
     "CORRUPTED",
 }
+export enum ELoadedBoardType {
+    "LOCAL",
+    "REMOTE",
+}
 export interface ILoadedBoard {
     board: IBoard
     userOverrides: IUserOverrides
     status: ELoadedBoardStatus
+    type: ELoadedBoardType
 }

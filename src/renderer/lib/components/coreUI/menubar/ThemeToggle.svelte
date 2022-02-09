@@ -1,7 +1,7 @@
 <script>
-    import { darkMode } from "@renderer/lib/store/darkModeStore";
     import ListButton from "@components/coreUI/buttons/ListButton.svelte";
     import ThemedElement from "@components/coreUI/ThemedElement.svelte";
+    // TODO: FIX
 </script>
 
 <ListButton>

@@ -1,9 +1,10 @@
 <script>
-    import { darkMode } from "@renderer/lib/store/darkModeStore";
+    import { themeStore } from "@renderer/lib/store/themeStore";
 </script>
 
-{#if $darkMode}
+{#if $themeStore.darkMode}
     <slot name="dark" />
+    <slot />
 {:else}
     <slot name="light" />
 {/if}

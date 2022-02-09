@@ -1,14 +1,11 @@
 <script>
     import Tooltip from "@components/Tooltip.svelte";
     import Popover from "@components/Popover.svelte";
-    import ThemedElement from "@components/coreUI/ThemedElement.svelte";
     import ListButton from "@components/coreUI/buttons/ListButton.svelte";
-    import { importLocalAssets } from "@lib/boardUtils";
-    import { activeBoardId } from "@lib/store/activeBoardStore";
     import IconPlus from "../../icons/IconPlus.svelte";
-import Button from "../../buttons/Button.svelte";
-import ToggleSwitch from "../../form/ToggleSwitch.svelte";
-import AddFromUrlModal from "./AddFromURLModal.svelte";
+    import AddFromUrlModal from "./AddFromURLModal.svelte";
+    import { importLocalAssets } from "@renderer/lib/store/boardsStore";
+    import { activeBoardIDStore } from "@renderer/lib/store/activeBoardStore";
 
    
 </script>
@@ -24,7 +21,7 @@ import AddFromUrlModal from "./AddFromURLModal.svelte";
         {#if true}
         <ul class="h-btn-list">
             <li>
-                <ListButton on:click={async () => importLocalAssets($activeBoardId)}>
+                <ListButton on:click={async () => importLocalAssets($activeBoardIDStore)}>
                     <div class="w-full flex gap-5 justify-between items-center">
                         <p>Add from File</p>
                         <svg fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">

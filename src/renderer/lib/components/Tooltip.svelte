@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { quartInOut } from "svelte/easing";
-    import { darkMode } from "../store/darkModeStore";
+import { themeStore } from "../store/themeStore";
 
     export let padding = true
 
@@ -14,7 +14,7 @@
     }
 </script>
 
-<div class="tooltip-wrapper relative" class:dark={$darkMode} on:mouseenter={mouseEnter} on:mouseleave={mouseExit}>
+<div class="tooltip-wrapper relative overflow-visible" class:dark={$themeStore.darkMode} on:mouseenter={mouseEnter} on:mouseleave={mouseExit}>
     <slot name="content"/>
     {#if visible}
     <div id="tooltip" class:padding={padding} in:fade={{ delay: 800, duration: 200, easing: quartInOut}} out:fade={{ delay: 100, duration: 200, easing: quartInOut}}>

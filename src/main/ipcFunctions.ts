@@ -7,6 +7,7 @@ import type { IData } from "@common/interfaces/IData"
 import type { ISettings } from "@common/interfaces/ISettings"
 import {
     ELoadedBoardStatus,
+    ELoadedBoardType,
     IBoard,
     ILoadedBoard,
 } from "@common/interfaces/IBoard"
@@ -24,39 +25,69 @@ import {
 } from "@common/interfaces/IAsset"
 import { EBoardLayout } from "@common/interfaces/EBoardLayout"
 import type { IUserOverrides } from "@common/interfaces/IUserOverrides"
+import type {
+    ICopyFilesToAssetsDirResult,
+    IGetFilesDialogResult,
+    IIPCBridge,
+    TAsyncResult,
+} from "@common/interfaces/IIPCBridge"
+import {
+    AppError,
+    InvalidArgumentError,
+    isError,
+    JsonError,
+    NotFoundError,
+    ReadFileError,
+    Rejection,
+    toRejection,
+    UncaughtError,
+    UnhandledRejection,
+} from "@common/Errors"
 
 let DATA_DIR = () => path.join(app.getPath("documents"), "Board")
 
-/**
- * @returns The current app version
- */
-export async function getVersion(): Promise<string> {
-    return process.env.npm_package_version || "undefined"
+async function getVersion(): TAsyncResult<string> {
+    return process.env.npm_package_version || new NotFoundError().toRejection() // TODO: Fix in packaged app
 }
 
-/**
- * Sets the local settings file to given value.
- * @param data New value for file
- * @returns true if successful, false if not
- */
-export async function setSettings(data: ISettings) {
-    return setDb(data, {
-        configName: "settings",
-        dataPath: DATA_DIR(),
-        defaults: SettingsDefault,
-    })
+async function getSettings(): TAsyncResult<ISettings> {
+    try {
+        return readDb({
+            configName: "settings",
+            dataPath: DATA_DIR(),
+            defaults: SettingsDefault,
+        })
+    } catch (e: any) {
+        if (e instanceof ReadFileError) {
+            return new Rejection("ReadFileError", e.message, {
+                file: e.file,
+            })
+        } else if (e instanceof JsonError) {
+            return new Rejection("JsonError", e.message, {
+                json: e.json,
+            })
+        } else {
+            return new UncaughtError(e).toRejection()
+        }
+    }
 }
 
-/**
- * Reads the current settings file.
- * @returns The current settings value or undefined if unsuccessful
- */
-export async function getSettings(): Promise<ISettings | undefined> {
-    return readDb({
-        configName: "settings",
-        dataPath: DATA_DIR(),
-        defaults: SettingsDefault,
-    })
+async function setSettings(data: ISettings): TAsyncResult<true> {
+    try {
+        return setDb(data, {
+            configName: "settings",
+            dataPath: DATA_DIR(),
+            defaults: SettingsDefault,
+        })
+    } catch (e: any) {
+        if (e instanceof InvalidArgumentError) {
+            return e.toRejection()
+        } else if (e instanceof ReadFileError) {
+            return e.toRejection()
+        } else {
+            return new UncaughtError(e).toRejection()
+        }
+    }
 }
 
 /**
@@ -64,48 +95,39 @@ export async function getSettings(): Promise<ISettings | undefined> {
  * @param data New value for file
  * @returns true if successful, false if not
  */
-export async function setData(data: IData) {
+/*export async function setData(data: IData) {
     return setDb(data, {
         configName: "data",
         dataPath: DATA_DIR(),
         defaults: DataDefault,
     })
-}
+}*/
 
 /**
  * Reads the current data file.
  * @returns The current data value or undefined if unsuccessful
  */
-export async function getData(): Promise<IData | undefined> {
+/*export async function getData(): Promise<IData | undefined> {
     return readDb({
         configName: "data",
         dataPath: DATA_DIR(),
         defaults: DataDefault,
     })
-}
+}*/
 
-export interface GetFilesDialogResult {
-    canceled: boolean
-    filePaths: string[]
-}
 /**
  * Opens a file picker dialog.
  * @returns The picked files
  */
-export async function getFilesDialog(): Promise<GetFilesDialogResult> {
+async function getFilesDialog(): TAsyncResult<IGetFilesDialogResult> {
     return await dialog.showOpenDialog({
+        // TODO: try
         title: "Select file(s)",
         buttonLabel: "Select",
         properties: ["openFile", "multiSelections"], // TODO: Allow directory select
     })
 }
 
-export interface CopyFilesToAssetsDirResult {
-    filePath: string
-    assetPath: string
-    assetHash: string
-    assetType: EAssetType
-}
 /**
  * Copies multiple files into the assets directory of a board.
  * This automatically hashes them and renames them to their hash value!
@@ -113,14 +135,15 @@ export interface CopyFilesToAssetsDirResult {
  * @param board The board to use
  * @returns A list of objects that include metadata about the newly created asset
  */
-export async function copyFilesToAssetsDir(
+async function copyFilesToAssetsDir(
     filePaths: string[],
     boardId: string
-): Promise<CopyFilesToAssetsDirResult[]> {
+): TAsyncResult<ICopyFilesToAssetsDirResult> {
+    // TODO: try
     let boarDir = path.join(DATA_DIR(), "boards", boardId)
     let assetsDir = path.join(boarDir, "assets")
 
-    return await Promise.all<CopyFilesToAssetsDirResult>(
+    return await Promise.all(
         filePaths.map(async (p) => {
             let fileExtension = p.split(".").pop() || "" //p.split(".")[p.split(".").length - 1]
             let fileHash = await md5File(p)
@@ -143,7 +166,8 @@ export async function copyFilesToAssetsDir(
  * @param board Board to get id from
  * @returns true if successful, false if not
  */
-export async function mkBoardDataDir(board: IBoard): Promise<boolean> {
+async function mkBoardDataDir(board: IBoard): Promise<boolean> {
+    // TODO: try
     let boardDir = path.join(DATA_DIR(), "boards", board.id)
     let assetsDir = path.join(boardDir, "assets")
     await mkdirs(boardDir)
@@ -151,11 +175,19 @@ export async function mkBoardDataDir(board: IBoard): Promise<boolean> {
     return true
 }
 
-export async function createBoard(
+async function createBoard(
     id: string,
     settings = { defaultLayout: EBoardLayout.grid, gridSize: 2, gridPadding: 2 }
-): Promise<boolean> {
-    let currBoards = await getBoards()
+): TAsyncResult<true> {
+    let res = await getBoards()
+    if (isError(res)) return toRejection(res)
+    let currBoards = res as (ILoadedBoard | Rejection)[]
+
+    // TODO: exception
+    if (isError(currBoards)) {
+        console.error("unhandled: ipcCreteBoard imp")
+        return UnhandledRejection()
+    }
 
     let nBoard = {
         // Metadata
@@ -207,36 +239,45 @@ export async function createBoard(
     return true
 }
 
-export async function getBoard(id: string): Promise<ILoadedBoard> {
+async function getBoard(id: string): TAsyncResult<ILoadedBoard> {
     let boardDir = path.join(DATA_DIR(), "boards", id)
     // Load board.json
+    let boardFile = readFileSync(path.join(boardDir, "board.json")).toString() // TODO: Catch
     let b
     try {
-        b = JSON.parse(
-            readFileSync(path.join(boardDir, "board.json")).toString()
-        )
-    } catch (error) {
-        console.error(`Corrupted board ${boardDir}?`)
+        b = JSON.parse(boardFile)
+    } catch (e) {
+        return new JsonError(
+            "Could not parse board.json",
+            e,
+            boardFile
+        ).toRejection()
     }
 
     // Load userOverrides.json
+    let overridesFile = readFileSync(
+        path.join(boardDir, "userOverrides.json")
+    ).toString()
     let o
     try {
-        o = JSON.parse(
-            readFileSync(path.join(boardDir, "userOverrides.json")).toString()
-        )
-    } catch (error) {
-        console.error(`Corrupted board ${boardDir}?`)
+        o = JSON.parse(overridesFile)
+    } catch (e) {
+        return new JsonError(
+            "Could not parse userOverrides.json",
+            e,
+            boardFile
+        ).toRejection()
     }
 
     return {
         board: b,
         userOverrides: o,
         status: ELoadedBoardStatus.LOADED,
+        type: ELoadedBoardType.LOCAL,
     }
 }
 
-export async function getBoards(): Promise<ILoadedBoard[]> {
+async function getBoards(): TAsyncResult<(ILoadedBoard | Rejection)[]> {
     let boardsDir = path.join(DATA_DIR(), "boards")
     let boardIds = (await readdir(boardsDir, { withFileTypes: true }))
         .filter((d) => d.isDirectory())
@@ -253,60 +294,46 @@ export async function getBoards(): Promise<ILoadedBoard[]> {
     return boards
 }
 
-export async function updateBoard(
+async function updateBoard(
     id: string,
     mutation: { board?: Object; userOverrides?: Object }
-): Promise<boolean> {
+): TAsyncResult<true> {
     let boardDir = path.join(DATA_DIR(), "boards", id)
-    let board = await getBoard(id)
+    try {
+        let board = (await getBoard(id)) as ILoadedBoard
+        let b = mutation.board || board.board
+        let o = mutation.userOverrides || board.userOverrides
 
-    let b = mutation.board || board.board
-    let o = mutation.userOverrides || board.userOverrides
+        // Update last modified
+        // @ts-ignore
+        b.modifiedAt = Date.now()
 
-    // Update last modified
-    // @ts-ignore
-    b.modifiedAt = Date.now()
+        writeFileSync(
+            path.join(boardDir, "board.json"),
+            JSON.stringify(b, undefined, 4)
+        )
+        writeFileSync(
+            path.join(boardDir, "userOverrides.json"),
+            JSON.stringify(o, undefined, 4)
+        )
 
-    /*console.trace(b)
-
-    if (mutation.board) {
-        Object.keys(mutation.board).forEach((k) => {
-            // @ts-ignore
-            b[k] = mutation[k]
-            /*if (k in b) b[k] = mutation[k]
-            else {
-                console.warn(
-                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
-                )
-                console.trace(
-                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
-                )
-            }
-        })
+        return true
+    } catch (e) {
+        // TODO: impl
+        return new UncaughtError("ipcUpdateBoard unimplemented!").toRejection()
     }
-    if (mutation.userOverrides) {
-        Object.keys(mutation.userOverrides).forEach((k) => {
-            // @ts-ignore
-            o[k] = mutation[k]
-            /*else {
-                console.warn(
-                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
-                )
-                console.trace(
-                    `[updateBoard] Trying to mutate with unknown key '${k}'!`
-                )
-            }
-        })
-    }*/
-
-    writeFileSync(
-        path.join(boardDir, "board.json"),
-        JSON.stringify(b, undefined, 4)
-    )
-    writeFileSync(
-        path.join(boardDir, "userOverrides.json"),
-        JSON.stringify(o, undefined, 4)
-    )
-
-    return true
 }
+
+const IPC: IIPCBridge = {
+    getVersion,
+    getSettings,
+    setSettings,
+
+    getFilesDialog,
+    copyFilesToAssetsDir,
+    createBoard,
+    getBoard,
+    getBoards,
+    updateBoard,
+}
+export default IPC

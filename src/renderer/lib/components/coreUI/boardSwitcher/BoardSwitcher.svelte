@@ -4,12 +4,12 @@
 
     import { switcherOpened } from "@renderer/lib/store/switcherOpenedStore";
     import BoardsGallery from "./BoardsGallery.svelte";
-import { boards } from "@renderer/lib/store/boardsStore";
-import { onMount } from "svelte";
+    import { onMount } from "svelte";
+    import { boardsStore } from "@renderer/lib/store/boardsStore";
 
     // INIT
     onMount(() => {
-        boards.load()
+        boardsStore.load()
     })
 
 </script>
@@ -19,14 +19,15 @@ import { onMount } from "svelte";
     <div id="switcher-background" on:click={() => switcherOpened.set(false)}></div>
     <div id="switcher" class="flex flex-col">
         <div>
-            <h1>Switch Boards</h1>
+            <h2 class="sch-bold">Switch Boards</h2>
             <div>
-                Sort & Search
+                <p><small>TODO ?Sort & Search</small></p>
             </div>
         </div>
         <div class="h-full">
-            {#key boards}
+            {#key $boardsStore}
             <BoardsGallery
+                boards={$boardsStore}
                 />
             {/key}
         </div>

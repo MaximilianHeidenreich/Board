@@ -1,15 +1,12 @@
 <script>
-import ListButton from "@renderer/lib/components/coreUI/buttons/ListButton.svelte";
+    import ListButton from "@renderer/lib/components/coreUI/buttons/ListButton.svelte";
 
-
-import Popover from "@renderer/lib/components/Popover.svelte";
-import Tooltip from "@renderer/lib/components/Tooltip.svelte";
-import { getVersion } from "@renderer/lib/ipcBridge";
-import { darkMode } from "@renderer/lib/store/darkModeStore";
-import { router } from "tinro";
-import IconMore from "../../icons/IconMore.svelte";
-import ThemedElement from "../../ThemedElement.svelte";
-import ThemeToggle from "../ThemeToggle.svelte";
+    import Popover from "@renderer/lib/components/Popover.svelte";
+    import Tooltip from "@renderer/lib/components/Tooltip.svelte";
+    import { router } from "tinro";
+    import IconMore from "../../icons/IconMore.svelte";
+    import ThemedElement from "../../ThemedElement.svelte";
+    import ThemeToggle from "../ThemeToggle.svelte";
 
 </script>
 
@@ -24,7 +21,7 @@ import ThemeToggle from "../ThemeToggle.svelte";
     <div slot="popover" class="w-fit">
         <ul class="h-btn-list">
             <li>
-                <ListButton on:click={() => darkMode.update(v => !v)}>
+                <!--<ListButton on:click={() => darkMode.update(v => !v)}>
                     <div class="w-full flex gap-5 justify-between items-center">
                         <p>
                             {#if $darkMode}
@@ -42,7 +39,7 @@ import ThemeToggle from "../ThemeToggle.svelte";
                             </svg>
                         </ThemedElement>
                     </div>
-                </ListButton>
+                </ListButton>-->
             </li>
             <li>
                 <ListButton on:click={() => router.goto("/dev")}>

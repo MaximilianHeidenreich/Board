@@ -32,6 +32,7 @@
         window.removeEventListener("dragleave", onDragLeave)
         window.removeEventListener("drop", onDrop)
     })
+    // TODO: FIX
 </script>
 
 <div class="pointer-events-none">

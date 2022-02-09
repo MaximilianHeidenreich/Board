@@ -2,7 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import { quartInOut } from "svelte/easing";
-    import { darkMode } from "@store/darkModeStore";
+import { themeStore } from "../store/themeStore";
 
     export let padding = true
     export let position: "t" | "tl" | "tr" | "rt" | "r" | "rb" | "b" | "bl" | "br" | "l" | "lt" | "lb" = "b"
@@ -27,7 +27,7 @@
     {#if opened}
     <div class="popover-background" on:click|preventDefault={close} in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}></div>
     {/if}
-    <div class="popover-wrapper relative" class:dark={$darkMode} on:click={open}>
+    <div class="popover-wrapper relative" class:dark={$themeStore.darkMode} on:click={open}>
         <slot name="content"/>
         {#if opened}
         <div id="popover" class:padding={padding} class="{position}"  in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}>

@@ -1,13 +1,11 @@
 <script lang="ts">
-    import App from "@renderer/App.svelte";
-import Board from "@renderer/lib/pages/Board.svelte";
-import { darkMode } from "@renderer/lib/store/darkModeStore";
+    import { themeStore } from "@renderer/lib/store/themeStore";
     import { createEventDispatcher } from "svelte";
 
 	const dispatch = createEventDispatcher();
 </script>
 
-<button class:dark={$darkMode} {...$$restProps} on:click={() => dispatch("click")}>
+<button class="schUI" class:dark={$themeStore.darkMode} {...$$restProps} on:click={() => dispatch("click")}>
     <slot/>
 </button>
 

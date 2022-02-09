@@ -7,22 +7,16 @@
     import LayoutToggle from "@components/coreUI/menubar/LayoutToggle.svelte";
     import ThemeToggle from "@components/coreUI/menubar/ThemeToggle.svelte";
     import ThemedElement from "@components/coreUI/ThemedElement.svelte";
-    import type { IBoard } from "@common/interfaces/IBoard";
-    import { settings } from "@store/settingsStore";
+    import type { IBoard, ILoadedBoard } from "@common/interfaces/IBoard";
     import Tooltip from '../../Tooltip.svelte';
-    import { darkMode } from '@renderer/lib/store/darkModeStore';
     import Slider from '../form/Slider.svelte';
     import MenuBar from "./MenuBar.svelte";
-import ExpandingTextArea from "../form/ExpandingTextArea.svelte";
-import AddMediaBtn from "./board/AddMediaBtn.svelte";
-import MoreBtn from "./board/MoreBtn.svelte";
-import { switcherOpened } from "@renderer/lib/store/switcherOpenedStore";
-import type { IUserOverrides } from "@common/interfaces/IUserOverrides";
-import { activeBoard } from "@renderer/lib/store/activeBoardStore";
-import BufferedInput from "../form/BufferedInput.svelte";
-import { createBufferedAction } from "@renderer/lib/store/bufferBusy";
+    import AddMediaBtn from "./board/AddMediaBtn.svelte";
+    import MoreBtn from "./board/MoreBtn.svelte";
+    import { switcherOpened } from "@renderer/lib/store/switcherOpenedStore";
+import { themeStore } from "@renderer/lib/store/themeStore";
 
-    export let  board: IBoard,
+    export let  board: ILoadedBoard,
                 commentsVisible = false;
     let settingsShown = false;
     const dispatch = createEventDispatcher();
@@ -37,15 +31,15 @@ import { createBufferedAction } from "@renderer/lib/store/bufferBusy";
 
 <MenuBar>
     {#if settingsShown}
-    <div id="settingsOverlay" class:dark={$darkMode} class="px-12 py-8 flex justify-between items-center" transition:fly="{{ y: -30, duration: 500, easing: quintOut }}">
+    <div id="settingsOverlay" class:dark={$themeStore.darkMode} class="px-12 py-8 flex justify-between items-center" transition:fly="{{ y: -30, duration: 500, easing: quintOut }}">
         <div class="flex flex-1 justify-evenly items-center">
             <div class="w-48 flex flex-col gap-3 items-center uppercase">
                 <strong>Grid Columns</strong>
-                <Slider min={1} max={6} bind:value={$activeBoard.userOverrides.gridSize}/>
+                <Slider min={1} max={6} bind:value={board.userOverrides.gridSize}/>
             </div>
             <div class="w-48 flex flex-col gap-3 items-center uppercase">
                 <strong>Grid Gap</strong>
-                <Slider min={0} max={8} bind:value={$activeBoard.userOverrides.gridPadding}/>
+                <Slider min={0} max={8} bind:value={board.userOverrides.gridPadding}/>
             </div>
         </div>
         <button on:click={ () => settingsShown = false }>
@@ -61,9 +55,9 @@ import { createBufferedAction } from "@renderer/lib/store/bufferBusy";
     </div>
     {/if}
 
-    <div id="menubar" class="h-full px-12 py-4 flex justify-between items-center">
+    <div id="menubar" class="h-full px-12 py-0 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <button on:click={() => switcherOpened.set(true)}><h2>Board</h2></button>
+            <button on:click={() => switcherOpened.set(true)}><h2 class="sch-bold">Board</h2></button>
             <ThemedElement>
                 <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
                     <path xmlns="http://www.w3.org/2000/svg" d="M12.2929 5.29289C12.6834 4.90237 13.3166 4.90237 13.7071 5.29289L19.7071 11.2929C20.0976 11.6834 20.0976 12.3166 19.7071 12.7071L13.7071 18.7071C13.3166 19.0976 12.6834 19.0976 12.2929 18.7071C11.9024 18.3166 11.9024 17.6834 12.2929 17.2929L17.5858 12L12.2929 6.70711C11.9024 6.31658 11.9024 5.68342 12.2929 5.29289ZM6.29289 5.29289C6.68342 4.90237 7.31658 4.90237 7.70711 5.29289L13.7071 11.2929C13.8946 11.4804 14 11.7348 14 12C14 12.2652 13.8946 12.5196 13.7071 12.7071L7.70711 18.7071C7.31658 19.0976 6.68342 19.0976 6.29289 18.7071C5.90237 18.3166 5.90237 17.6834 6.29289 17.2929L11.5858 12L6.29289 6.70711C5.90237 6.31658 5.90237 5.68342 6.29289 5.29289Z" fill="#fff"></path>
@@ -73,7 +67,7 @@ import { createBufferedAction } from "@renderer/lib/store/bufferBusy";
                 </svg>
             </ThemedElement>
             <button on:click={() => dispatch("openDetails")}>
-                <h3>{$activeBoard.board.title}</h3>
+                <h3  class="sch-semibold">{board.board.title}</h3>
             </button>
         </div>
         <div>

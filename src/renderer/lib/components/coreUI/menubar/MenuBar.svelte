@@ -3,7 +3,7 @@
     import { quartInOut } from "svelte/easing";
 </script>
 
-<nav in:fade="{{ duration: 500, easing: quartInOut}}">
+<nav class="schUI" in:fade="{{ duration: 500, easing: quartInOut}}">
     <slot/>
 </nav>
 

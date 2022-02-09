@@ -1,19 +1,5 @@
 import { BrowserWindow, ipcMain, systemPreferences, clipboard } from "electron"
-import type { IBoard } from "@common/interfaces/IBoard"
-import {
-    copyFilesToAssetsDir,
-    createBoard,
-    getBoard,
-    getBoards,
-    getData,
-    getFilesDialog,
-    getSettings,
-    getVersion,
-    mkBoardDataDir,
-    setData,
-    setSettings,
-    updateBoard,
-} from "./ipcFunctions"
+import IPC from "./ipcFunctions"
 
 interface ipcSendReceive {
     receive: string
@@ -23,7 +9,7 @@ interface ipcSendReceive {
 
 export const preloadChannels = [
     "ping",
-    "version",
+    "getVersion",
 
     "getSettings",
     "setSettings",
@@ -32,7 +18,6 @@ export const preloadChannels = [
 
     "getFilesDialog",
     "copyFilesToAssetsDir",
-    "mkBoardDataDir",
 
     "createBoard",
     "getBoard",
@@ -63,34 +48,23 @@ function mainIpcFunction(
             case "ping":
                 resolve("pong")
                 break
-            case "version":
-                resolve(await getVersion())
+            case "getVersion":
+                resolve(await IPC.getVersion())
                 break
 
+            case "getSettings":
+                resolve(await IPC.getSettings())
+                break
             // Sets the settings db to given value.
             case "setSettings":
                 if (!args[0]) {
                     console.log("Tried to set settings db with no value!")
                     reject("Tried to set settings db with no value!")
                 }
-                resolve(await setSettings(args[0]))
+                resolve(await IPC.setSettings(args[0]))
                 break
-            case "getSettings":
-                resolve(await getSettings())
-                break
-            case "setData":
-                if (!args[0]) {
-                    console.error("Tried to set data db with no value!")
-                    return
-                }
-                resolve(await setData(args[0]))
-                break
-            case "getData":
-                resolve(await getData())
-                break
-
             case "getFilesDialog":
-                resolve(await getFilesDialog())
+                resolve(await IPC.getFilesDialog())
                 break
 
             case "copyFilesToAssetsDir":
@@ -103,23 +77,23 @@ function mainIpcFunction(
                 let files: string[] = args[0]
                 let boardId: string = args[1]
 
-                resolve(copyFilesToAssetsDir(files, boardId))
+                resolve(IPC.copyFilesToAssetsDir(files, boardId))
                 break
 
-            case "mkBoardDataDir":
+            /*case "mkBoardDataDir":
                 if (!args[0]) {
                     console.error("Tried to call mkBoardDataDir with no value!")
                     return
                 }
                 resolve(await mkBoardDataDir(args[0]))
-                break
+                break*/
 
             case "createBoard":
                 if (args.length < 1) {
                     console.error("Tried to call createBoard with no value!")
                     return
                 }
-                let op = await createBoard(args[0], args[1])
+                let op = await IPC.createBoard(args[0], args[1])
                 op ? resolve(true) : reject(op)
                 break
             case "getBoard":
@@ -127,17 +101,17 @@ function mainIpcFunction(
                     console.error("Tried to call getBoards with no value!")
                     return
                 }
-                resolve(await getBoard(args[0]))
+                resolve(await IPC.getBoard(args[0]))
                 break
             case "getBoards":
-                resolve(await getBoards())
+                resolve(await IPC.getBoards())
                 break
             case "updateBoard":
                 if (args.length !== 2) {
                     console.error("Tried to call updateBoard with no value!")
                     return
                 }
-                resolve(await updateBoard(args[0], args[1]))
+                resolve(await IPC.updateBoard(args[0], args[1]))
                 break
 
             case "clippy":

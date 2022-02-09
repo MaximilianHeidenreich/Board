@@ -9,9 +9,9 @@
     import IconDelete from "../../icons/IconDelete.svelte";
     import IconSwap from "../../icons/IconSwap.svelte";
     import IconMessage from "../../icons/IconMessage.svelte";
-    import { removeEntityFromActive } from "@renderer/lib/boardUtils";
     import IconLoader from "../../icons/IconLoader.svelte";
-    import CommentsPanel from "../CommentsPanel.svelte";
+    import CommentsPanel from "../comments/CommentsPanel.svelte";
+    import { removeEntityFromActive } from "@renderer/lib/store/activeBoardStore";
 
     // STATE
     export let entity: IEntity
@@ -33,7 +33,7 @@
             // TODO: err popup
             console.error(e);
         }
-        }, 1500)
+        }, 500)
     }
 
 </script>
@@ -42,10 +42,16 @@
         bind:opened={commentsPanelOpen}
         />
 
-<div class="entity relative bg-neutral-100" class:editable>
+<div class="entity relative bg-neutral-100" 
+    class:editable 
+    draggable={editable} 
+    on:dragstart={() => dispatch("dragStart")} 
+    on:dragend={() => dispatch("dragEnd")}
+    >
+
     {#if entity.assetType === EAssetType.LOCAL_IMAGE}
         <LocalImageAsset 
-            asset={entity.asset}
+            bind:asset={entity.asset}
             />
     {/if}
     <div class="entityCtrl">
@@ -62,7 +68,7 @@
                     </Tooltip>
 
                     <Tooltip>
-                        <button slot="content" on:click={() => dispatch("onRearrange") }>
+                        <button slot="content" on:click={() => dispatch("clickReorder") }>
                             <IconSwap colorLight="#fff"/> 
                         </button>
                         <p slot="tooltip">Rearrange (!ONLY if not busy!)</p>

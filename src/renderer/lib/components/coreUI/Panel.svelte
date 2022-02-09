@@ -9,7 +9,7 @@
 
 
     // STATE
-    export let position: "pos-t" | "pos-l" | "pos-b" | "pos-r"
+    export let position: "pos-none" | "pos-t" | "pos-l" | "pos-b" | "pos-r" = "pos-none"
     export let minWidth = "40ch"
     export let opened = false
 </script>
@@ -21,7 +21,7 @@
         <div class="header flex justify-between items-center">
             <slot name="title" />
             <Tooltip>
-                <button slot="content" on:click={() => opened = false }>
+                <button slot="content" class="ml-8" on:click={() => opened = false }>
                     <IconClose/>
                 </button>
                 <p slot="tooltip">Close</p>
@@ -56,10 +56,14 @@
     }
 
     .content {
-        @apply pt-8 overflow-y-auto;
+        height: 100%;
+        @apply py-8 overflow-y-auto;
     }
 
     /* POSITIONS */
+    .panel.pos-none {
+        position: relative;
+    }
     .panel.pos-l {
         top: 0;
         left: 0;

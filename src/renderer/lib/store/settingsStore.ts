@@ -1,20 +1,21 @@
+import { isError } from "@common/Errors"
 import type { ISettings } from "@common/interfaces/ISettings"
 import { createModel } from "sveltemodel/Model"
-import { getSettings, setSettings } from "../ipcBridge"
+import IPC from "../ipc/ipcBridge"
 
-export let settings = createModel<ISettings>({
+export let settingsStore = createModel<ISettings>({
     saveFn: async (o) => {
-        try {
-            let res = await setSettings(o) // TODO: impl err msgs into ipc funcs
-            if (res) return {}
-            else throw { msg: "Could not save settings!" }
-        } catch (e) {
-            console.error(e)
-        }
-        throw { msg: "sla" } // TODO!: Untanglet this bitch
+        console.debug("[BufferedAction :: settingsStore] save()")
+        let res = await IPC.setSettings(o)
+        if (isError(res))
+            return { msg: "Could not save settingsStore", meta: res }
+        return {}
     },
     loadFn: async () => {
-        return await getSettings()
+        console.debug("[BufferedAction :: settingsStore] loadFN()")
+        let res = await IPC.getSettings()
+        if (isError(res)) return undefined
+        return res as ISettings
     },
     loadOnCreate: true,
 })

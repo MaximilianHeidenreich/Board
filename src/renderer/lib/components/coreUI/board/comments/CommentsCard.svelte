@@ -1,10 +1,13 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
-import ThemedElement from "../ThemedElement.svelte";
+    import ThemedElement from "../ThemedElement.svelte";
+
+    // STATE
     export let note: any = {},
                 expanded = true;
 
+    // API
     function toggleExpand() {
         expanded = !expanded;
     }

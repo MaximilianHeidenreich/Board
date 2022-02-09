@@ -58,3 +58,9 @@ export function arrayInsert<T>(array: T[], index: number, item: T): T[] {
     array.splice(index, 0, item)
     return array
 }
+
+export function padLeadingZero(n: number): string {
+    let s = n.toString()
+    s = s.padStart(2, "0")
+    return s
+}

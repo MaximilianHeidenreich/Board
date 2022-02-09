@@ -1,16 +1,16 @@
 <script lang="ts">
-    import type { IBoard } from "@common/interfaces/IBoard";
-
-    import { boardMapMode } from "@store/boardModeStore";
+    import type { ILoadedBoard } from "@common/interfaces/IBoard";
 
     import BoardMenuBar from "@components/coreUI/menubar/BoardMenuBar.svelte";
     import BoardMapView from "@components/coreUI/board/BoardMapView.svelte";
     import BoardGridView from "@components/coreUI/board/BoardGridView.svelte";
     import PageContent from "../components/coreUI/PageContent.svelte";
     import BoardDetailsPanel from "../components/coreUI/board/BoardDetailsPanel.svelte";
+    import { activeBoardStore } from "../store/activeBoardStore";
+    import { EBoardLayout } from "@common/interfaces/EBoardLayout";
     
     // STATE
-    export let board: IBoard
+    export let board: ILoadedBoard
 
     let boardDetailsOpen = false
 
@@ -19,22 +19,23 @@
 </script>
 
 <BoardDetailsPanel
+    bind:board
     bind:opened={boardDetailsOpen}
     />
 
 <BoardMenuBar
-    board={board}
+    bind:board
     commentsVisible={commentsVisible}
     on:openDetails={() => boardDetailsOpen = true}
     on:toggleComments={() => commentsVisible = !commentsVisible}
     />
 
 <PageContent>
-    {#if $boardMapMode}
+    {#if $activeBoardStore.userOverrides.layout === EBoardLayout.map}
     <BoardMapView/>
-    {:else}
+    {:else if $activeBoardStore.userOverrides.layout === EBoardLayout.grid}
     <BoardGridView 
-        board={board}
+        bind:board
         notesVisible={commentsVisible}
         />
     {/if}

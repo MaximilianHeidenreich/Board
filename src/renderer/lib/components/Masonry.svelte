@@ -1,34 +1,9 @@
 <!-- 
   An almost direct copy and paste of: https://css-tricks.com/a-lightweight-masonry-solution
-  Usage:
-    - stretchFirst stretches the../store/activeBoardStore  <Masonry stretchFirst={true} >
-    {#each data as o}
-      <div class="_card _padding">
-        Here's some stuff {o.name}
-        <header>
-          <h3>{o.name}</h3>
-        </header>
-        <section>
-          <p>{o.text}</p> 
-        </section>
-      </div>
-    {/each}
-  </Masonry>
  -->
-
-
-
-<div bind:this={masonryElement} 
-     class={`__grid--masonry ${stretchFirst ? '__stretch-first' : ''}`}
-     style={`--grid-gap: ${gridGap}; --columns: ${columns}; --col-width: ${colWidth};`}
-     {...$$restProps}>
-  <slot></slot>
-</div>
-
-
-
 <script lang="ts">
     import { onMount, onDestroy, getContext, setContext, tick } from 'svelte'
+import ArrangeZone from './coreUI/board/rearranger/ArrangeDropZone.svelte';
     export let  stretchFirst = false,
                 gridGap = '0.5em',
                 colWidth = 'minmax(Min(20em, 100%), 1fr)',
@@ -122,6 +97,13 @@
 
     setTimeout(refreshLayout, 800) // TODO!: Better solution?
 </script>
+
+<div bind:this={masonryElement} 
+     class={`__grid--masonry ${stretchFirst ? '__stretch-first' : ''}`}
+     style={`--grid-gap: ${gridGap}; --columns: ${columns}; --col-width: ${colWidth};`}
+     {...$$restProps}>
+  <slot />
+</div>
 
 <!-- 
   $w: var(--col-width); // minmax(Min(20em, 100%), 1fr);

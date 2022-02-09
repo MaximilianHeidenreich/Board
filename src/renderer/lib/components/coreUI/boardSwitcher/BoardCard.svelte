@@ -1,12 +1,11 @@
 <script lang="ts">
     import type { IBoard } from "@common/interfaces/IBoard";
-    import { activeBoardId } from "@renderer/lib/store/activeBoardStore";
-    import ThemedElement from "../ThemedElement.svelte";
     import { switcherOpened } from '@renderer/lib/store/switcherOpenedStore';
-import { EAssetType, IAssetLocalImage } from "@common/interfaces/IAsset";
-import { openBoard } from "@renderer/lib/boardUtils";
+    import { EAssetType, IAssetLocalImage } from "@common/interfaces/IAsset";
+    import { openBoard } from "@renderer/lib/store/activeBoardStore";
 
 
+    // STATE
     export let board: IBoard;
     let headerImage = board.entities.find(e => e.assetType === EAssetType.LOCAL_IMAGE)?.asset as IAssetLocalImage
     let cardBG = headerImage ? `url('file://${headerImage.assetPath}')` : "linear-gradient(180deg, #fdfbfb 0%, #ebedee 100%)"

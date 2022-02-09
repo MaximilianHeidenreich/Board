@@ -1,11 +1,12 @@
 <script>
-    import { darkMode } from "@store/darkModeStore";
+import { themeStore } from "@renderer/lib/store/themeStore";
+
     import { createEventDispatcher } from "svelte";
 
 	const dispatch = createEventDispatcher();
 </script>
 
-<button class:dark={$darkMode} on:click={() => dispatch("click")}>
+<button class:dark={$themeStore.darkMode} on:click={() => dispatch("click")}>
     <slot/>
 </button>
 

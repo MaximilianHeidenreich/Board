@@ -1,11 +1,13 @@
 <script>
-    import theme from "@renderer/lib/theme";
+    import { themeStore } from "@renderer/lib/store/themeStore";
+    import { get } from "svelte/store";
+
 
     import Icon from "./Icon.svelte";
 
     export let  size = 24,
-                colorLight = theme.colors.textBase,
-                colorDark = theme.colors.textBaseDark
+                colorLight = get(themeStore).colors.textBase,
+                colorDark = get(themeStore).colors.textBaseDark
 </script>
 
 <Icon>

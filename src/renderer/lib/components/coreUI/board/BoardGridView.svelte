@@ -1,52 +1,33 @@
 <script lang="ts">
-    import type { IBoard } from "@common/interfaces/IBoard";
+    import type { ILoadedBoard } from "@common/interfaces/IBoard";
 
-    import { settings } from "@renderer/lib/store/settingsStore";
-
-    import { fade } from "svelte/transition";
-    import CommentsPanel from "./CommentsSummaryPanel.svelte";
-    import Masonry from "@components/Masonry.svelte";
-    import BoardEntity from "./entities/BoardEntity.svelte";
-    import { data } from "@renderer/lib/store/dataStore";
-    import { activeBoard } from "@renderer/lib/store/activeBoardStore";
-    import BoardGridRearanger from "./rearranger/BoardGridRearanger.svelte";
-import { boards } from "@renderer/lib/store/boardsStore";
+    import CommentsPanel from "./comments/CommentsPanel.svelte";
+    import { settingsStore } from "@renderer/lib/store/settingsStore";
+    import BoardMasonry from "./BoardMasonry.svelte";
 
     // State
-    export let  board: IBoard,
-                notesVisible = false,
-                rearrange = false
+    export let  board: ILoadedBoard,
+                notesVisible = false
 
     //$: entities = $boards.find(e => e.board.id === board.id)?.board.entities.sort((a, b) => a.gridPosition - b.gridPosition)
-    $: entities = $boards.find(e => e.board.id === board.id)?.board.entities
-    $: gridGap = ($settings.defaultBoardGridPaddingValue * $activeBoard.userOverrides.gridPadding).toString() + $settings.defaultBoardGridPaddingUnit;
+    //$: entities = $boards.find(e => e.board.id === board.id)?.board.entities
+    $: gridGap = ($settingsStore.defaultBoardGridPaddingValue * board.userOverrides.gridPadding).toString() + $settingsStore.defaultBoardGridPaddingUnit;
 
 </script>
 
 <div id="board">
-    <CommentsPanel visible={notesVisible}/>
+    <CommentsPanel opened={notesVisible}/>
     <div id="content">
-        {#if entities}
-            {#if !rearrange}
-                {#key $activeBoard.board}
-                    <Masonry items={entities} stretchFirst={false} gridGap={gridGap} columns={$activeBoard.userOverrides.gridSize} colWidth="1fr">
-                        {#each entities as entity}
-                            <BoardEntity
-                                entity={entity}
-                                on:onRearrange={() => rearrange = true}
-                                />
-                        {/each}
-                    </Masonry>
-                {/key}
-            {:else}
-                {#key $boards}
-                    <BoardGridRearanger 
-                        entities={entities}
-                        on:doneRearrange={() => rearrange = false}
-                        />
-                {/key}
-            {/if}
-        {/if}
+        <BoardMasonry bind:entities={board.board.entities} stretchFirst={false} gridGap={gridGap} columns={board.userOverrides.gridSize} colWidth="1fr">
+            <!--{#key $activeBoardStore.board.entities}
+                
+            {/key}-->
+            <!--{#each $activeBoardStore.board.entities as entity}
+                <BoardEntity
+                    bind:entity={entity}
+                    />
+            {/each}-->
+        </BoardMasonry>
     </div>
 </div>
 

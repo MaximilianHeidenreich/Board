@@ -2,8 +2,9 @@
     import { fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
     import CommentsCard from "./CommentsCard.svelte";
-import ThemedElement from "../ThemedElement.svelte";
+    import ThemedElement from "../ThemedElement.svelte";
 
+    // STATE
     export let visible = false;
     let expanding = false;
     let width = 300;
