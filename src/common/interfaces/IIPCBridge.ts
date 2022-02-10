@@ -71,7 +71,7 @@ export interface IIPCBridge {
         options: ICreateBoardOptions
     ) => TAsyncResult<true>
 
-    //ipcDeleteBoard: () => asyncResult<void>
+    deleteBoard: (id: string) => TAsyncResult<true>
 
     /**
      *

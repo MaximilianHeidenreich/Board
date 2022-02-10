@@ -74,6 +74,14 @@ async function createBoard(
     )
     return res[0]
 }
+async function deleteBoard(id: string): TAsyncResult<true> {
+    let res = await window.main.get<true | Rejection>(
+        "deleteBoard",
+        undefined,
+        id
+    )
+    return res[0]
+}
 
 async function getBoard(id: string): TAsyncResult<ILoadedBoard> {
     let res = await window.main.get<ILoadedBoard | Rejection>(
@@ -108,7 +116,9 @@ const IPC: IIPCBridge = {
 
     getFilesDialog,
     copyFilesToAssetsDir,
+
     createBoard,
+    deleteBoard,
     getBoard,
     getBoards,
     updateBoard,

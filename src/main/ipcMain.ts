@@ -20,6 +20,7 @@ export const preloadChannels = [
     "copyFilesToAssetsDir",
 
     "createBoard",
+    "deleteBoard",
     "getBoard",
     "getBoards",
     "updateBoard",
@@ -93,9 +94,18 @@ function mainIpcFunction(
                     console.error("Tried to call createBoard with no value!")
                     return
                 }
-                let op = await IPC.createBoard(args[0], args[1])
-                op ? resolve(true) : reject(op)
+                let createOp = await IPC.createBoard(args[0], args[1])
+                createOp ? resolve(true) : reject(createOp)
                 break
+            case "deleteBoard":
+                if (args.length < 1) {
+                    console.error("Tried to call deleteBoard with no value!")
+                    return
+                }
+                let deleteOp = await IPC.deleteBoard(args[0])
+                deleteOp ? resolve(true) : reject(deleteOp)
+                break
+
             case "getBoard":
                 if (!args[0]) {
                     console.error("Tried to call getBoards with no value!")

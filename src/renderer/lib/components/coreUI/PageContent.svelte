@@ -10,11 +10,11 @@
 <style>
     main {
         /*isolation: isolate;*/
-        z-index: 15;
+        z-index: 10;
         /*min-height: var(--content-height);
         max-height: var(--content-height);*/
         position: absolute;
-        left: 0;
+        /*left: 0;*/
         right: 0;
         bottom: 0;
         height: var(--content-height);

@@ -26,13 +26,13 @@
         busyDelete = true
         setTimeout(async () => {
             try {
-            await removeEntityFromActive(entity.id)
-            busyDelete = false
-        }
-        catch (e) {
-            // TODO: err popup
-            console.error(e);
-        }
+                await removeEntityFromActive(entity.id)
+                busyDelete = false
+            }
+            catch (e) {
+                // TODO: err popup
+                console.error(e);
+            }
         }, 500)
     }
 
@@ -51,6 +51,7 @@
 
     {#if entity.assetType === EAssetType.LOCAL_IMAGE}
         <LocalImageAsset 
+            on:load={() => dispatch("load")}
             bind:asset={entity.asset}
             />
     {/if}
@@ -65,13 +66,6 @@
                             <div class="commentBubble"></div>
                         </button>
                         <p slot="tooltip">Show comments</p>
-                    </Tooltip>
-
-                    <Tooltip>
-                        <button slot="content" on:click={() => dispatch("clickReorder") }>
-                            <IconSwap colorLight="#fff"/> 
-                        </button>
-                        <p slot="tooltip">Rearrange (!ONLY if not busy!)</p>
                     </Tooltip>
                 </div>
             </div>

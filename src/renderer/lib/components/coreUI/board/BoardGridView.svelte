@@ -4,6 +4,7 @@
     import CommentsPanel from "./comments/CommentsPanel.svelte";
     import { settingsStore } from "@renderer/lib/store/settingsStore";
     import BoardMasonry from "./BoardMasonry.svelte";
+    import { activeBoardStore } from "@renderer/lib/store/activeBoardStore";
 
     // State
     export let  board: ILoadedBoard,
@@ -18,15 +19,8 @@
 <div id="board">
     <CommentsPanel opened={notesVisible}/>
     <div id="content">
-        <BoardMasonry bind:entities={board.board.entities} stretchFirst={false} gridGap={gridGap} columns={board.userOverrides.gridSize} colWidth="1fr">
-            <!--{#key $activeBoardStore.board.entities}
-                
-            {/key}-->
-            <!--{#each $activeBoardStore.board.entities as entity}
-                <BoardEntity
-                    bind:entity={entity}
-                    />
-            {/each}-->
+        <BoardMasonry bind:entities={$activeBoardStore.board.entities} stretchFirst={false} gridGap={gridGap} columns={board.userOverrides.gridSize} colWidth="1fr">
+            
         </BoardMasonry>
     </div>
 </div>
@@ -35,9 +29,8 @@
 
 <style lang="postcss">
     #board {
-        @apply pl-12 pr-4 py-6;
-        @apply flex gap-8;
-        height: var(--content-height);
+        @apply pl-12 pr-4 py-6 pt-16;
+        height: 100%;
     }
     #content {
         height: 100%;

@@ -1,31 +1,74 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { quartInOut } from "svelte/easing";
-import { themeStore } from "../store/themeStore";
+    import { createPopper } from "@popperjs/core"
+    import type { Placement } from "@popperjs/core"
 
-    export let padding = true
+    // STATE
+    export let  shown: boolean = false,
+                pos: Placement = "bottom",
+                padded = true
 
-    let visible = false;
-    function mouseEnter() {
-        visible = true;
-    }
-    function mouseExit() {
-        visible = false;
-    }
+    let trigger: Element,
+	    tooltip: HTMLElement,
+        arrow: HTMLElement
+
+    // https://popper.js.org/docs/v2/constructors/
+    $:  if (shown) createPopper(trigger, tooltip, {
+            placement: pos,
+            strategy: "fixed",
+            modifiers: [
+                {
+                    name: "offset",
+                    options: {
+                        offset: [0, 10],
+                    },
+                },
+                {
+                    name: "arrow",
+                    options: {
+                        element: arrow,
+                        padding: 5,
+                    },
+                },
+            ],
+        });
 </script>
 
-<div class="tooltip-wrapper relative overflow-visible" class:dark={$themeStore.darkMode} on:mouseenter={mouseEnter} on:mouseleave={mouseExit}>
+<div class="trigger" bind:this={trigger} on:mouseenter={() => shown = true} on:mouseleave={() => shown = false}>
     <slot name="content"/>
-    {#if visible}
-    <div id="tooltip" class:padding={padding} in:fade={{ delay: 800, duration: 200, easing: quartInOut}} out:fade={{ delay: 100, duration: 200, easing: quartInOut}}>
-        <slot name="tooltip"/>
-    </div>
-    {/if}
+</div>
+<div bind:this={tooltip} class="schUI tooltip" class:shown class:padded > <!-- in:fade={{ delay: 800, duration: 200, easing: quartInOut}} out:fade={{ delay: 100, duration: 200, easing: quartInOut}} -->
+    <slot name="tooltip" />
+    <div class="arrow" bind:this={arrow}></div>
 </div>
 
 <style lang="postcss">
-    .tooltip-wrapper {
-        /* isolation: isolate; */
+    div.trigger {
+		position: relative;
+	}
+    .arrow { /* TODO: FIX */
+        color: black;
+    }
+    .tooltip.shown {
+        opacity: 1;
+        transition: opacity 0.2s 0.9s ease;
+	}
+	.tooltip {
+		display: block;
+        position: block;
+        position: absolute;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+
+		@apply text-sm font-semibold text-white bg-gray-900 border-2 border-gray-700 rounded-xl shadow-xl;        
+        transition: opacity 0.2s 0s ease;
+	}
+    .tooltip.padded {
+        @apply px-3 py-2;
+    }
+    /*.tooltip-wrapper {
     }
     #tooltip {
         @apply inline-block absolute;
@@ -58,4 +101,5 @@ import { themeStore } from "../store/themeStore";
     .tooltip-wrapper.dark #tooltip::after {
         border-bottom: 7px solid rgba(255,255,255, 1);
     }
+    */
 </style>

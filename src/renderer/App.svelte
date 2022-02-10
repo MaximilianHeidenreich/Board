@@ -1,10 +1,8 @@
 <script lang="ts">
-    import type { IBoard } from "@common/interfaces/IBoard";
     import { get } from "svelte/store";
     import {  onMount } from "svelte";
 
     import Dropzone from "./lib/components/coreUI/board/Dropzone.svelte";
-    import Board from "./lib/pages/Board.svelte";
     import BoardSwitcher from "./lib/components/coreUI/boardSwitcher/BoardSwitcher.svelte";
     import { Route } from "tinro";
     import Dev from "./lib/pages/Dev.svelte";
@@ -18,8 +16,8 @@
     import { isError } from "@common/Errors";
     import { themeStore } from "./lib/store/themeStore";
     import IPC from "./lib/ipc/ipcBridge";
-
-
+    import Sidebar from "./lib/components/coreUI/sidebar/Sidebar.svelte";
+    import Editor from "./lib/pages/Editor.svelte";
  
     // Loat last opened board / create new if none exist
     onMount(async () => {
@@ -81,11 +79,12 @@
                         --textMuted: {theme.colors.textMuted};
                         --textMutedDark: {theme.colors.textMutedDark}
 -->
-<div id="root" style="">
+<div id="root" class="h-full">
     <div id="titlebar" class="schUI px-3 flex justify-end items-center gap-3">
+        <p class="muted"><small>Debug:</small></p>
         <p class="muted"><small>v{#await IPC.getVersion() then version}{version}{/await}</small></p>
         <p class="muted"><small>Active Board ID: {$activeBoardIDStore}</small></p>
-        <p class="muted"><small>BufferBusy: <b>{#if $bufferBusy}<span class="text-rose-400">BUSY</span>{:else}<span class="text-lime-400">CLEAR</span>{/if}</b></small></p>
+        <p class="muted"><small><b>{#if $bufferBusy}<span class="text-rose-400">BUSY</span>{:else}<span class="text-lime-400">IDLE</span>{/if}</b></small></p>
     </div>
     <!--<Dropzone/>-->
     <div class="app-wrapper" class:dark={$themeStore.darkMode}>
@@ -96,25 +95,43 @@
             restoreScrollState={false}
         />-->
         <!--<BoardSwitcher/>-->
-        {#key $activeBoardIDStore}
-            {#if $activeBoardStore}   
-                <Board
-                    bind:board={$activeBoardStore}
-                    />
+
+        {#if $settingsStore && $boardsStore}
+        <Sidebar
+            bind:settings={$settingsStore}
+            bind:shown={$settingsStore.sidebarShown}/>
+        {/if}
+
+        <main>
             
-            {:else}
-            <div class="loader-wrapper flex justify-center items-center">
-                <div class="flex flex-col items-center gap-5">
-                    <div class="loader"></div>
-                    <p>Loading...</p>
-                </div>
-            </div>
-            {/if}
-        {/key}
-        <!--<Route path="/">
-            
-        </Route>
-        <Route path="/dev">
+            <Route path="/" redirect="/editor">
+                home
+            </Route>
+            <Route path="/editor">
+                
+                
+                {#if $activeBoardStore}
+                    <!--{#key activeBoardIDStore}-->
+                    <Editor
+                        bind:board={$activeBoardStore}
+                        />
+                {:else}
+                    <div class="loader-wrapper flex justify-center items-center">
+                        <div class="flex flex-col items-center gap-5">
+                            <div class="loader"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                {/if}
+                
+
+            </Route>
+            <Route path="/settings">
+                settings
+            </Route>
+        </main>
+        
+        <!--<Route path="/dev">
             <Dev/>
         </Route>
         <Route path="/dev/icons">
@@ -124,22 +141,28 @@
 </div>
 
 <style lang="postcss">
+
+
+
+
+
+
+
+
+
     :global(.muted) {
         color: var(--textMuted)
     }
     .app-wrapper {
-        width: 100%;
-        max-height: 100vh;
-        /*display: grid;
-        grid-template-columns: auto;
-        grid-template-rows: var(--titlebar-height) auto 1fr; /* calc(1fr - var(--titlebar-height)) */
-        display: flex;
-        flex-direction: column;
+        @apply w-full h-full overflow-hidden flex;
         transition: background-color .3s 0s ease-in-out,
                     color .3s 0s ease-in-out;
     }
+    main {
+        @apply w-full h-full py-12 px-8 overflow-hidden;
+    }
     .app-wrapper.dark {
-        @apply bg-black text-white ;
+        @apply bg-black text-white;
     }
     .loader-wrapper {
         position: absolute;

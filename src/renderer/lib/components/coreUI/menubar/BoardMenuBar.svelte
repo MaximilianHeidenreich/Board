@@ -15,6 +15,7 @@
     import MoreBtn from "./board/MoreBtn.svelte";
     import { switcherOpened } from "@renderer/lib/store/switcherOpenedStore";
 import { themeStore } from "@renderer/lib/store/themeStore";
+import { settingsStore } from "@renderer/lib/store/settingsStore";
 
     export let  board: ILoadedBoard,
                 commentsVisible = false;
@@ -57,7 +58,11 @@ import { themeStore } from "@renderer/lib/store/themeStore";
 
     <div id="menubar" class="h-full px-12 py-0 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <button on:click={() => switcherOpened.set(true)}><h2 class="sch-bold">Board</h2></button>
+            <button on:click={() => $settingsStore.sidebarShown = !$settingsStore.sidebarShown}>
+                <svg class="feather feather-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <ThemedElement>
                 <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
                     <path xmlns="http://www.w3.org/2000/svg" d="M12.2929 5.29289C12.6834 4.90237 13.3166 4.90237 13.7071 5.29289L19.7071 11.2929C20.0976 11.6834 20.0976 12.3166 19.7071 12.7071L13.7071 18.7071C13.3166 19.0976 12.6834 19.0976 12.2929 18.7071C11.9024 18.3166 11.9024 17.6834 12.2929 17.2929L17.5858 12L12.2929 6.70711C11.9024 6.31658 11.9024 5.68342 12.2929 5.29289ZM6.29289 5.29289C6.68342 4.90237 7.31658 4.90237 7.70711 5.29289L13.7071 11.2929C13.8946 11.4804 14 11.7348 14 12C14 12.2652 13.8946 12.5196 13.7071 12.7071L7.70711 18.7071C7.31658 19.0976 6.68342 19.0976 6.29289 18.7071C5.90237 18.3166 5.90237 17.6834 6.29289 17.2929L11.5858 12L6.29289 6.70711C5.90237 6.31658 5.90237 5.68342 6.29289 5.29289Z" fill="#fff"></path>
@@ -87,11 +92,11 @@ import { themeStore } from "@renderer/lib/store/themeStore";
                                 </svg>
                             </ThemedElement>
                         </button>
-                        <p slot="tooltip">Export / Share</p>
+                        <span slot="tooltip">Export / Share</span>
                     </Tooltip>
                     
                 </li>
-                <li>
+                <!--<li>
                     <Tooltip>
                         <button slot="content">
                             <ThemedElement>
@@ -125,7 +130,6 @@ import { themeStore } from "@renderer/lib/store/themeStore";
                     <Tooltip>
                         <button slot="content" on:click={toggleComments}>
                             {#if commentsVisible}
-                            <!-- TODO!: other icon -->
                             <ThemedElement>
                                 <svg slot="light" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path xmlns="http://www.w3.org/2000/svg" d="M2 6C2 4.89543 2.89543 4 4 4H20C21.1046 4 22 4.89543 22 6V17C22 18.1046 21.1046 19 20 19H15.4142L12.7071 21.7071C12.3166 22.0976 11.6834 22.0976 11.2929 21.7071L8.58579 19H4C2.89543 19 2 18.1046 2 17V6ZM20 6H4V17H9C9.26522 17 9.51957 17.1054 9.70711 17.2929L12 19.5858L14.2929 17.2929C14.4804 17.1054 14.7348 17 15 17H20V6Z" fill="#0D0D0D"></path>
@@ -168,7 +172,7 @@ import { themeStore } from "@renderer/lib/store/themeStore";
                 </li>
                 <li>
                     <MoreBtn/>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>
@@ -186,7 +190,7 @@ import { themeStore } from "@renderer/lib/store/themeStore";
         top: 0;
         left: 0;
         right: 0;
-        margin-top: var(--titlebar-height);
+        /*margin-top: var(--titlebar-height);*/
         @apply bg-white border-b-2 border-neutral-200;
     }
     #settingsOverlay.dark {

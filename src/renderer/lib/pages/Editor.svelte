@@ -4,7 +4,6 @@
     import BoardMenuBar from "@components/coreUI/menubar/BoardMenuBar.svelte";
     import BoardMapView from "@components/coreUI/board/BoardMapView.svelte";
     import BoardGridView from "@components/coreUI/board/BoardGridView.svelte";
-    import PageContent from "../components/coreUI/PageContent.svelte";
     import BoardDetailsPanel from "../components/coreUI/board/BoardDetailsPanel.svelte";
     import { activeBoardStore } from "../store/activeBoardStore";
     import { EBoardLayout } from "@common/interfaces/EBoardLayout";
@@ -30,13 +29,11 @@
     on:toggleComments={() => commentsVisible = !commentsVisible}
     />
 
-<PageContent>
-    {#if $activeBoardStore.userOverrides.layout === EBoardLayout.map}
-    <BoardMapView/>
-    {:else if $activeBoardStore.userOverrides.layout === EBoardLayout.grid}
-    <BoardGridView 
-        bind:board
-        notesVisible={commentsVisible}
-        />
-    {/if}
-</PageContent>
+{#if $activeBoardStore.userOverrides.layout === EBoardLayout.map}
+<BoardMapView/>
+{:else if $activeBoardStore.userOverrides.layout === EBoardLayout.grid}
+<BoardGridView 
+    bind:board
+    notesVisible={commentsVisible}
+    />
+{/if}

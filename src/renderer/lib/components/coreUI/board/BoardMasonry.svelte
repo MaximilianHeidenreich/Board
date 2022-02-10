@@ -98,6 +98,7 @@
     $: if(masonryElement) { 
         // @ts-ignore
         calcGrid([masonryElement])
+        refreshLayout()
     }
 
     // @ts-ignore
@@ -109,8 +110,6 @@
 
     // API
     function reorder(targetPosition: number) {
-        console.log("reorder", targetPosition);
-        
         if (!reorderDraggedEntity) return
         targetPosition = targetPosition < 0 ? 0 : targetPosition
         targetPosition = targetPosition > entities.length ? entities.length : targetPosition
@@ -119,7 +118,6 @@
         reorderActive = false
     }
 
-    //setTimeout(refreshLayout, 800) // TODO!: Better solution?
 </script>
 
 <div bind:this={masonryElement} 
@@ -140,10 +138,10 @@
                     </div>
                 </div>
             {/if}
-            <!--{entities.findIndex(e => e.id === entity.id)}-->
             <BoardEntity 
                 entity={entity}
                 editable={entitiesEditable} 
+                on:load={() => refreshLayout()}
                 on:dragStart={() => { reorderDraggedEntity = entity; reorderActive = true }}
                 on:dragEnd={() => { reorderActive = false } }
                 on:clickReorder={() => reorderActive = true}

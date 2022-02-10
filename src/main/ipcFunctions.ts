@@ -3,7 +3,6 @@
  *
  */
 
-import type { IData } from "@common/interfaces/IData"
 import type { ISettings } from "@common/interfaces/ISettings"
 import {
     ELoadedBoardStatus,
@@ -11,12 +10,12 @@ import {
     IBoard,
     ILoadedBoard,
 } from "@common/interfaces/IBoard"
-import { SettingsDefault, DataDefault } from "@common/defaults"
+import { SettingsDefault } from "@common/defaults"
 
 import { app, dialog } from "electron"
 import path from "path"
 import { readdir } from "fs/promises"
-import { copy, mkdirs, readFileSync, writeFileSync } from "fs-extra"
+import { copy, mkdirs, readFileSync, removeSync, writeFileSync } from "fs-extra"
 import md5File from "md5-file"
 import { setDb, readDb } from "@main/Store"
 import {
@@ -239,6 +238,12 @@ async function createBoard(
     return true
 }
 
+async function deleteBoard(id: string): TAsyncResult<true> {
+    let boardDir = path.join(DATA_DIR(), "boards", id)
+    removeSync(boardDir)
+    return true
+}
+
 async function getBoard(id: string): TAsyncResult<ILoadedBoard> {
     let boardDir = path.join(DATA_DIR(), "boards", id)
     // Load board.json
@@ -331,7 +336,9 @@ const IPC: IIPCBridge = {
 
     getFilesDialog,
     copyFilesToAssetsDir,
+
     createBoard,
+    deleteBoard,
     getBoard,
     getBoards,
     updateBoard,

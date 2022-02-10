@@ -5,16 +5,9 @@ import {
     Rejection,
     toRejection,
 } from "@common/Errors"
-import { EAssetType, newIAssetLocalImage } from "@common/interfaces/IAsset"
-import type { IAsset } from "@common/interfaces/IAsset"
+
 import type { ILoadedBoard } from "@common/interfaces/IBoard"
-import { newIEntity } from "@common/interfaces/IEntity"
-import type { IEntity } from "@common/interfaces/IEntity"
-import type {
-    ICopyFilesToAssetsDirResult,
-    IGetFilesDialogResult,
-    TAsyncResult,
-} from "@common/interfaces/IIPCBridge"
+import type { TAsyncResult } from "@common/interfaces/IIPCBridge"
 import { uuidv4 } from "@common/util"
 import { get } from "svelte/store"
 import { createModel } from "sveltemodel/Model"
@@ -132,70 +125,14 @@ export async function addNewBoard(autoOpen = false): TAsyncResult<string> {
     return id
 }
 
-/**
- * Opens filepicker and adds selected files as entities.
- */
-export async function importLocalAssets(boardId: string): TAsyncResult<true> {
-    let files: IGetFilesDialogResult
-    {
-        let res = await IPC.getFilesDialog()
-        if (isError(res)) return toRejection(res)
-        files = res as IGetFilesDialogResult
-    }
-
-    let assets: ICopyFilesToAssetsDirResult
-    {
-        let res = await IPC.copyFilesToAssetsDir(files.filePaths, boardId)
-        if (isError(res)) return toRejection(res)
-        assets = res as ICopyFilesToAssetsDirResult
-    }
-
-    // Add entities for each asset.
-    boardsStore.update((d) => {
-        assets.forEach((a) => {
-            let boardIndex = d.indexOf(
-                // @ts-ignore
-                d.find((b) => b.board.id === boardId)
-            )
-            if (boardIndex < 0) {
-                console.trace("null board") //TODO: Add error
-                return
-            }
-
-            let entityAsset: IAsset | undefined
-            switch (a.assetType) {
-                case EAssetType.LOCAL_IMAGE:
-                    entityAsset = newIAssetLocalImage(a.assetPath)
-                    break
-                default:
-                    console.trace(
-                        "default in switch assetType! SHOULT NOT HAPPEN"
-                    )
-                    break
-            }
-
-            if (entityAsset) {
-                let entity: IEntity = newIEntity({
-                    assetType: a.assetType,
-                    asset: entityAsset,
-                    gridPosition: d[boardIndex].board.entities.length + 1,
-                })
-                d[boardIndex].board.entities.push(entity)
-            } else {
-                console.trace("No entity asset! should not happen!")
-            }
-        })
-        return d
+export async function deleteBoard(id: string): TAsyncResult<true> {
+    boardsStore.update((v) => {
+        v = v.filter((e) => e.board.id !== id)
+        return v
     })
-
-    // Reload view
-    /*{
-        let b = boards.getById(boardId)
-        if (b) activeBoard.set(b)
-        else {
-            // TODO: Err
-            console.error("Not implemented!")
-        }
-    }*/
+    {
+        let res = await IPC.deleteBoard(id)
+        if (isError(res)) return toRejection(res)
+    }
     return true
 }

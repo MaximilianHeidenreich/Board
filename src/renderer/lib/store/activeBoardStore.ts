@@ -1,5 +1,14 @@
 import { isError, Rejection, toRejection } from "@common/Errors"
+import { EAssetType, newIAssetLocalImage } from "@common/interfaces/IAsset"
+import type { IAsset } from "@common/interfaces/IAsset"
 import type { IBoard, ILoadedBoard } from "@common/interfaces/IBoard"
+import { newIEntity } from "@common/interfaces/IEntity"
+import type { IEntity } from "@common/interfaces/IEntity"
+import type {
+    ICopyFilesToAssetsDirResult,
+    IGetFilesDialogResult,
+    TAsyncResult,
+} from "@common/interfaces/IIPCBridge"
 import { writable, get } from "svelte/store"
 import { createModel } from "sveltemodel/Model"
 import IPC from "../ipc/ipcBridge"
@@ -8,7 +17,7 @@ import { settingsStore } from "./settingsStore"
 
 export const activeBoardIDStore = writable<string>()
 export let activeBoardStore = createModel<ILoadedBoard>({
-    derived: activeBoardIDStore,
+    //derived: activeBoardIDStore,
 
     saveFn: async (o) => {
         if (!o) return {}
@@ -51,8 +60,8 @@ export let activeBoardStore = createModel<ILoadedBoard>({
 })
 activeBoardStore.initialized.then(() => {
     activeBoardIDStore.subscribe((v) => {
-        //let b = boardsStore.getById(v)
-        //if (b) activeBoardStore.set(b)
+        let b = boardsStore.getById(v)
+        if (b) activeBoardStore.set(b)
     })
 })
 
@@ -90,6 +99,103 @@ export function openBoardRaw(
     // Save board as last opened
     settingsStore.mutate({ openBoardId: data.id })
 
+    return true
+}
+
+/**
+ * Opens filepicker and adds selected files as entities.
+ */
+export async function importLocalEntityToActive(
+    boardId: string
+): TAsyncResult<true> {
+    let files: IGetFilesDialogResult
+    {
+        let res = await IPC.getFilesDialog()
+        if (isError(res)) return toRejection(res)
+        files = res as IGetFilesDialogResult
+    }
+
+    let assets: ICopyFilesToAssetsDirResult
+    {
+        let res = await IPC.copyFilesToAssetsDir(files.filePaths, boardId)
+        if (isError(res)) return toRejection(res)
+        assets = res as ICopyFilesToAssetsDirResult
+    }
+
+    // Add entities for each asset.
+    activeBoardStore.update((b) => {
+        assets.forEach((a) => {
+            let entityAsset: IAsset | undefined
+            switch (a.assetType) {
+                case EAssetType.LOCAL_IMAGE:
+                    entityAsset = newIAssetLocalImage(a.assetPath)
+                    break
+                default:
+                    console.trace(
+                        "default in switch assetType! SHOULT NOT HAPPEN"
+                    )
+                    break
+            }
+
+            if (entityAsset) {
+                let entity: IEntity = newIEntity({
+                    assetType: a.assetType,
+                    asset: entityAsset,
+                    gridPosition: b.board.entities.length + 1,
+                })
+                b.board.entities.push(entity)
+            } else {
+                console.trace("No entity asset! should not happen!")
+            }
+        })
+        return b
+    })
+    /*boardsStore.update((d) => {
+        assets.forEach((a) => {
+            let boardIndex = d.indexOf(
+                // @ts-ignore
+                d.find((b) => b.board.id === boardId)
+            )
+            if (boardIndex < 0) {
+                console.trace("null board") //TODO: Add error
+                return
+            }
+
+            let entityAsset: IAsset | undefined
+            switch (a.assetType) {
+                case EAssetType.LOCAL_IMAGE:
+                    entityAsset = newIAssetLocalImage(a.assetPath)
+                    break
+                default:
+                    console.trace(
+                        "default in switch assetType! SHOULT NOT HAPPEN"
+                    )
+                    break
+            }
+
+            if (entityAsset) {
+                let entity: IEntity = newIEntity({
+                    assetType: a.assetType,
+                    asset: entityAsset,
+                    gridPosition: d[boardIndex].board.entities.length + 1,
+                })
+                d[boardIndex].board.entities.push(entity)
+            } else {
+                console.trace("No entity asset! should not happen!")
+            }
+        })
+        return d
+    })*/
+
+    // Reload view
+    /*{
+        let b = boards.getById(boardId)
+        if (b) activeBoard.set(b)
+        else {
+            // TODO: Err
+            console.error("Not implemented!")
+        }
+    }*/
     return true
 }
 

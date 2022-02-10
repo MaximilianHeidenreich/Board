@@ -9,7 +9,7 @@
 
 <style>
     nav {
-        margin-top: var(--titlebar-height);
+        /*margin-top: var(--titlebar-height);*/
         /*isolation: isolate; */
         z-index: 15;
     }

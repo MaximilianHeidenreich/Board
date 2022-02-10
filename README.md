@@ -43,7 +43,13 @@ https://codepen.io/kattixie/pen/bEYyZb
 
 https://github.com/rozek/svelte-drag-and-drop-actions
 
+### Comments
+
+-   svelte:self https://www.youtube.com/watch?v=0rKBt4PSfew&list=PLoKaNN3BjQX3mxDEVG3oGJx2ByXnue_gR&index=68 recursion
+
 ### Synchronization
+
+https://docs.deta.sh/docs/home/
 
 -   Github
 -   Google drive

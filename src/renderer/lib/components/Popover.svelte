@@ -1,179 +1,109 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { fade } from "svelte/transition";
-    import { quartInOut } from "svelte/easing";
-import { themeStore } from "../store/themeStore";
-
-    export let padding = true
-    export let position: "t" | "tl" | "tr" | "rt" | "r" | "rb" | "b" | "bl" | "br" | "l" | "lt" | "lb" = "b"
+    import { createPopper } from "@popperjs/core"
+    import type { Placement } from "@popperjs/core"
 
     // STATE
-    export let opened = false;
+    export let  shown: boolean = false,
+                pos: Placement = "bottom",
+                padded = true
+    let button: Element,
+	    tooltip: HTMLElement,
+        arrow: HTMLElement
 
+    function popToggle() {
+        shown = !shown
+    }
 
-    // API
-    const dispatch = createEventDispatcher()
-    function open() {
-        opened = true
-        dispatch("changeState", { opened })
-    }
-    function close() {
-        opened = false
-        dispatch("changeState", { opened })
-    }
+    // https://popper.js.org/docs/v2/constructors/
+    $:  if (shown) createPopper(button, tooltip, {
+            placement: pos,
+            strategy: "fixed",
+            modifiers: [
+                {
+                    name: "offset",
+                    options: {
+                        offset: [0, 10],
+                    },
+                },
+                {
+                    name: "arrow",
+                    options: {
+                        element: arrow,
+                        padding: 5,
+                    },
+                },
+            ],
+        });
+    
 </script>
 
-<div class="z-50">
-    {#if opened}
-    <div class="popover-background" on:click|preventDefault={close} in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}></div>
-    {/if}
-    <div class="popover-wrapper relative" class:dark={$themeStore.darkMode} on:click={open}>
-        <slot name="content"/>
-        {#if opened}
-        <div id="popover" class:padding={padding} class="{position}"  in:fade={{ duration: 200, easing: quartInOut}} out:fade={{ duration: 200, easing: quartInOut}}>
-            <slot name="popover"/>
-        </div>
-        {/if}
-    </div>
+
+<button bind:this={button} on:click={popToggle}>
+    <slot name="content"/>
+</button>
+<div class="bg" class:shown on:click|stopPropagation={() => shown = false}></div>
+<div bind:this={tooltip} class="popover" class:shown class:padded>
+    <slot name="pop" />
+    <div class="arrow" bind:this={arrow}></div>
 </div>
 
+
+<!--<button bind:this={button} on:click={() => {
+		show = !show;
+		if (show) {
+			createPopper(button, tooltip, {
+				placement: 'right',
+		 		modifiers: [
+					{
+						name: 'offset',
+						options: {
+							offset: [0, 10],
+						},
+					},
+				],
+			});
+		}
+	}} class="button">
+	Toggle
+</button>-->
+
 <style lang="postcss">
-    .popover-background {
+    button {
+		position: relative;
+	}
+    .bg {
+        display: none;
         position: fixed;
         top: 0;
         left: 0;
-        right: 0;
         bottom: 0;
-        @apply bg-slate-50 opacity-40;
-    }
-    .popover-wrapper {
-        z-index: 100;
-        isolation: isolate;
-    }
-    .popover-wrapper.dark #popover {
-        @apply bg-neutral-800 text-white;
-    }
-    .popover-wrapper.dark #popover::after {
-        border-bottom: 7px solid rgba(0,0,0, 1);
-    }
-
-    #popover {
-        @apply inline-block absolute;
-        @apply text-sm font-medium text-black bg-neutral-50 rounded-lg shadow-lg border-2 border-neutral-100;
-        left: 50%;
-        transform: translateX(-50%);
-        width: max-content;
-        max-width: 40ch;
-    }
-    #popover.padding {
-        @apply py-2 px-3;
-    }
-    #popover::after {
-        position: absolute;
-        left: 50%;
-        top: -7px;
-        transform: translateX(-50%);
-        content: "";
-        width: 0;
-        height: 0;
-        border-left: 9px solid transparent;
-        border-right: 9px solid transparent;
-        border-bottom: 7px solid rgba(255,255,255, 1);
-        @apply border-b-neutral-100;
-        
-    }
-
-    /* POSITIONS */
-    /* "t" | "tl" | "tr" | "rt" | "r" | "rb" | "b" | "bl" | "br" | "l" | "lt" | "lb" = "b" */
-    #popover.t {
-        left: 50%;
-        bottom: 2.4rem;
-        transform: translateX(-50%);
-    }
-    #popover.t::after {
-        
-    }
-    #popover.tl {
-        left: 10%;
-        bottom: 2.4rem;
-        transform: translateX(-10%);
-    }
-    #popover.tl::after {}
-    #popover.tr {
-        left: 90%;
-        bottom: 2.4rem;
-        transform: translateX(-90%);
-    }
-    #popover.tr::after {}
-    #popover.r {
         right: 0;
-        top: 50%;
-        transform: translate(2rem, -50%);
+        z-index: 99;
+        @apply bg-neutral-100 opacity-30;
     }
-    #popover.r::after {}
-    #popover.rt {
-        top: -10%;
-        transform: translate(2rem, -10%);
+    .bg.shown {
+        display: block;
     }
-    #popover.rt::after {}
-    
-    #popover.rb {
-        bottom: -10%;
-        transform: translate(2rem, 10%);
+	
+    .arrow { /* TODO: FIX */
+        color: black;
     }
-    #popover.rb::after {}
-    #popover.b {
-        left: 50%;
-        top: 2.4rem;
-        transform: translateX(-50%);
+    .popover.shown {
+		display: block;
+	}
+
+	.popover {
+		display: none;
+        position: block;
+        position: absolute;
+        z-index: 100;
+
+		@apply bg-white border-2 rounded-xl shadow-xl;
+        
+	}
+    .popover.padded {
+        @apply px-4 py-4;
     }
-    #popover.b::after {
-        left: 50%;
-        top: -7px;
-        transform: translateX(-50%);
-        border-left: 9px solid transparent;
-        border-right: 9px solid transparent;
-    }
-    #popover.bl {
-        left: 10%;
-        top: 2.4rem;
-        transform: translateX(-10%);
-    }
-    #popover.bl::after {
-        left: 10%;
-        top: -7px;
-        transform: translateX(-10%);
-        border-left: 9px solid transparent;
-        border-right: 9px solid transparent;
-    }
-    #popover.br {
-        left: 90%;
-        top: 2.4rem;
-        transform: translateX(-90%);
-    }
-    #popover.br::after {
-        left: 90%;
-        top: -7px;
-        transform: translateX(-90%);
-        border-left: 9px solid transparent;
-        border-right: 9px solid transparent;
-    }
-    #popover.l {
-        left: -100%;
-        top: 50%;
-        transform: translate(-100%, -50%);
-    }
-    #popover.l::after {} /* TODO: FIX */
-    #popover.lt {
-        left: -100%;
-        top: 10%;
-        transform: translate(-100%, -10%);
-    }
-    #popover.lt::after {}
-    #popover.lb {
-        left: -100%;
-        top: 90%;
-        transform: translate(-100%, -90%);
-    }
-    #popover.lb::after {}
+	
+	
 </style>

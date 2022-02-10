@@ -24,6 +24,7 @@
     },
     "postinstall": "electron-builder install-app-deps",
     "devDependencies": {
+        "@popperjs/core": "^2.11.2",
         "@sveltejs/vite-plugin-svelte": "^1.0.0-next.10",
         "@types/node": "^15.12.1",
         "chalk": "^4.1.0",

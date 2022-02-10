@@ -1,5 +1,12 @@
 import type { EBoardLayout } from "./EBoardLayout"
 
+export interface ICollection {
+    name: string
+    expanded: boolean
+    boards: string[]
+    subCollections: ICollection[]
+}
+
 export interface ISettings {
     // Application
     windowBounds: {
@@ -12,6 +19,8 @@ export interface ISettings {
 
     // App state
     openBoardId: string
+    sidebarShown: boolean
+    collections: ICollection[]
 
     // Board view
     defaultBoardLayout: EBoardLayout
