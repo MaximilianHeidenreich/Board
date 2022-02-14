@@ -15,7 +15,14 @@ import { SettingsDefault } from "@common/defaults"
 import { app, dialog } from "electron"
 import path from "path"
 import { readdir } from "fs/promises"
-import { copy, mkdirs, readFileSync, removeSync, writeFileSync } from "fs-extra"
+import {
+    copy,
+    mkdirs,
+    readFileSync,
+    remove,
+    removeSync,
+    writeFileSync,
+} from "fs-extra"
 import md5File from "md5-file"
 import { setDb, readDb } from "@main/Store"
 import {
@@ -152,12 +159,26 @@ async function copyFilesToAssetsDir(
             // TODO: Send msg to rendere to display status
             return {
                 filePath: p,
+                assetID: fileHash,
                 assetPath: assetPath,
                 assetHash: fileHash,
                 assetType: fileExtensionToEAssetType(fileExtension),
             }
         })
     )
+}
+async function deleteAsset(
+    boardID: string,
+    assetID: string
+): TAsyncResult<true> {
+    let boarDir = path.join(DATA_DIR(), "boards", boardID)
+    let assetsDir = path.join(boarDir, "assets")
+
+    const assetFiles = await readdir(assetsDir)
+    let assetFile = assetFiles.find((f) => f.startsWith(assetID))
+    if (assetFile) await remove(path.join(assetsDir, assetFile))
+
+    return true
 }
 
 /**
@@ -213,6 +234,7 @@ async function createBoard(
         layout: settings.defaultLayout,
         gridSize: settings.gridSize,
         gridPadding: settings.gridPadding,
+        sidebarFolderPath: "",
     }
 
     await mkBoardDataDir(nBoard)
@@ -336,6 +358,7 @@ const IPC: IIPCBridge = {
 
     getFilesDialog,
     copyFilesToAssetsDir,
+    deleteAsset,
 
     createBoard,
     deleteBoard,

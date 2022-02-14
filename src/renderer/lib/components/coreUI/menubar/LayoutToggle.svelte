@@ -1,10 +1,23 @@
 <script lang="ts">
+import { EBoardLayout } from "@common/interfaces/EBoardLayout";
+
+    import { activeBoardStore } from "@renderer/lib/store/activeBoardStore";
     import Tooltip from "../../Tooltip.svelte";
     import ThemedElement from "../ThemedElement.svelte";
+
+    // API
+    function toggleLayout() {
+        if ($activeBoardStore.userOverrides.layout === EBoardLayout.grid) {
+            $activeBoardStore.userOverrides.layout = EBoardLayout.map
+        }
+        else if ($activeBoardStore.userOverrides.layout === EBoardLayout.map) {
+            $activeBoardStore.userOverrides.layout = EBoardLayout.grid
+        }
+    }
 </script>
 
 <Tooltip>
-    <button slot="content" on:click={() => {}}>
+    <button slot="content" on:click={toggleLayout}>
         {#if true}
         <ThemedElement>
             <svg slot="dark" fill="none" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -25,11 +38,11 @@
         </ThemedElement>
         {/if}
     </button>
-    <p slot="tooltip">
-        {#if true}
+    <span slot="tooltip">
+        {#if $activeBoardStore.userOverrides.layout === EBoardLayout.map}
         Grid View
         {:else}
         Map View
         {/if}
-    </p>
+    </span>
 </Tooltip>

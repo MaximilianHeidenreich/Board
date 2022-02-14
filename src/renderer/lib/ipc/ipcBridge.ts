@@ -14,6 +14,12 @@ import type {
 } from "@common/interfaces/IIPCBridge"
 import type { ISettings } from "@common/interfaces/ISettings"
 
+async function openExternal(url: string): TAsyncResult<true> {
+    return (
+        await window.main.get<true | Rejection>("openExternal", undefined, url)
+    )[0]
+}
+
 async function getVersion(): TAsyncResult<string> {
     return (await window.main.get<string | Rejection>("getVersion"))[0]
 }
@@ -48,6 +54,19 @@ async function copyFilesToAssetsDir(
             undefined,
             filePaths,
             boardId
+        )
+    )[0]
+}
+async function deleteAsset(
+    boardID: string,
+    assetID: string
+): TAsyncResult<true> {
+    return (
+        await window.main.get<true | Rejection>(
+            "deleteAsset",
+            undefined,
+            boardID,
+            assetID
         )
     )[0]
 }
@@ -110,12 +129,15 @@ async function updateBoard(
 }
 
 const IPC: IIPCBridge = {
+    openExternal,
     getVersion,
     getSettings,
     setSettings,
 
     getFilesDialog,
+
     copyFilesToAssetsDir,
+    deleteAsset,
 
     createBoard,
     deleteBoard,

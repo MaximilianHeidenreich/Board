@@ -29,15 +29,16 @@
 
 <style lang="postcss">
     #board {
-        @apply pl-12 pr-4 py-6 pt-16;
+        @apply pl-12 pr-4 pb-12 pt-10;
         height: 100%;
     }
     #content {
         height: 100%;
+        overflow-x: hidden;
         overflow-y: auto;
         flex-grow: 1;
         min-width: 30ch;
-        margin-top: .4rem;
+        
         @apply pr-4;
     }
 </style>

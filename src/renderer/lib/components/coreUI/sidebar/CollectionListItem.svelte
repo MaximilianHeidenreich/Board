@@ -1,17 +1,17 @@
 <script lang="ts">
 
-    import type { ICollection } from "@common/interfaces/ISettings";
-    import CollectionsList from "./CollectionsList.svelte";
-    import BoardFileButton from "./BoardFileButton.svelte";
+    import type { IFolder } from "@common/interfaces/ISettings";
+    import CollectionsList from "./FolderTree.svelte";
+    import BoardFileButton from "./FolderBoardButton.svelte";
 
     // STATE
-    export let  collection: ICollection
+    export let  collection: IFolder
 
     
 </script>
 
 <li class="mt-1">
-    {#each collection.boards as boardId}
+    <!--{#each collection.boards as boardId}-_>
         <!--<li class="my-1 pr-8" 
             draggable="true"
             on:dragstart={(e) => {
@@ -33,7 +33,7 @@
             </div>
         </li>-->
         
-        <BoardFileButton 
+        <!--<BoardFileButton 
             bind:collection
             bind:boardId/>
         
@@ -41,5 +41,5 @@
     <CollectionsList
         inner={true}
         bind:collections={collection.subCollections}
-        />
+        />-->
 </li>

@@ -10,11 +10,13 @@ export const SettingsDefault: ISettings = {
 
     // User
     displayName: "Untitled User",
+    licenseKey: "",
 
     // App state
     openBoardId: "",
-    collections: [],
     sidebarShown: false,
+    favourites: [],
+    folders: [],
 
     // Board view
     defaultBoardLayout: EBoardLayout.grid,

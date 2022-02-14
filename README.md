@@ -1,9 +1,165 @@
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![GPLv3 License][license-shield]][license-url]
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+[forks-shield]: https://img.shields.io/github/forks/MaximilianHeidenreich/Board?style=flat-square
+[forks-url]: https://github.com/MaximilianHeidenreich/Board/network
+[stars-shield]: https://img.shields.io/github/stars/MaximilianHeidenreich/Board?style=flat-square
+[stars-url]: https://github.com/MaximilianHeidenreich/Board/stargazers
+[issues-shield]: https://img.shields.io/github/issues/MaximilianHeidenreich/Board?style=flat-square
+[issues-url]: https://github.com/MaximilianHeidenreich/Board/issues
+[license-shield]: https://img.shields.io/github/license/MaximilianHeidenreich/Board?style=flat-square
+[license-url]: https://github.com/MaximilianHeidenreich/Board/blob/master/LICENSE
+
+<!-- PROJECT HEADER -->
+<br />
+<p align="center">
+  <a href="https://github.com/MaximilianHeidenreich/Board">
+    <img width="300" src="https://github.com/MaximilianHeidenreich/Brief/blob/dbe448fbc8272ec96fdde3dad738cede3ae46d4b/static/brief_banner.png?raw=true" alt="Project Logo" >
+  </a>
+
+  <p align="center">
+    <small>
+        \ ˈbrēf \ - <em>short in duration, extent or length</em>
+        <br />
+        Board - <em>minimalisitc app with powerful features to build beautiful moodboards.</em>
+    </small>
+    <br />
+    <br />
+    <a href="#"><strong>Explore the docs »</strong></a>
+    <br />
+    <a href="#">Download now</a>
+    ·
+    <a href="https://github.com/MaximilianHeidenreich/Brief/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/MaximilianHeidenreich/Brief/issues">Request Feature</a>
+  </p>
+</p>
+
+<!-- TABLE OF CONTENTS -->
+
+## Table of Contents
+
+-   [Table of Contents](#table-of-contents)
+-   [About The Project](#about-the-project)
+    -   [Features](#features)
+-   [Usage](#usage)
+    -   [Web](#web)
+    -   [API](#api)
+    -   [Dev](#dev)
+-   [Contributing](#contributing)
+-   [Contact](#contact)
+-   [Licenses](#licenses)
+
+<!-- ABOUT THE PROJECT -->
+
+## About The Project
+
+Have you ever felt the need to send a brief message to someone but not through those unpersonal messager apps? Brief has you covered!
+
+With Brief you can send short messages (_30 chars max._) to other people.
+
+<br />
+
+### Features
+
+-   [x] Core
+    -   [x] Create moodboards
+    -   [ ] Supports many different media types
+        -   [ ] Images
+        -   [ ] Videos
+        -   [ ] Text
+        -   [ ] URL's
+    -   [ ] Export
+        -   [ ] to PNG/JPEG
+        -   [ ] to PDF
+-   [x] Premium
+    -   [ ] Unlimited cloud backups
+    -   [ ] Remote collaboration
+    -   [ ] Export
+        -   [ ] to Website
+
+<br>
+
+<!-- CONTRIBUTING -->
+
+## Contributing
+
+Feel free to contribute to this project if you find something that is missing or can be optimized.
+If you do so, please follow the following steps:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<br />
+
+<!-- CONTACT -->
+
+## Contact
+
+Maximilian Heidenreich - github@maximilian-heidenreich.de
+
+Project Link: [https://github.com/MaximilianHeidenreich/Board](https://github.com/MaximilianHeidenreich/Board)
+
+Project Banner: [https://github.com/MaximilianHeidenreich/Board/blob/master/static/brief_banner.png](https://github.com/MaximilianHeidenreich/Board/blob/master/static/brief_banner.png)
+
+<br />
+
+<!-- LICENSE -->
+
+## Licenses
+
+The project uses Twemoji for its favicon and banner image.
+
+“[Twemoji](https://twemoji.twitter.com)” by [Twitter OSS](https://twitter.com/TwitterOSS) is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
 # TODO:
 
 https://blog.avocode.com/4-must-know-tips-for-building-cross-platform-electron-apps-f3ae9c2bffff
 
 -   Auto updater -> probably custom package
 -   WYSIWYG -> https://svelte.dev/tutorial/tick
+
+## Features
+
+### Core
+
+-   Boards
+    -   Grid View
+    -   Map View
+-   Import media types
+    -   Import into assets folder / Link external
+    -   Images
+    -   Videos
+    -   Text
+    -   Websites
+    -   Auto copy images from clipboard (ask)
+-   Export
+    -   Image (PNG/JPEG)
+    -   PDF
+
+### Premium
+
+-   Cloud backup
+-   Remote collaboration
+-   Export
+    -   Web
 
 ## Logging
 
@@ -54,6 +210,11 @@ https://docs.deta.sh/docs/home/
 -   Github
 -   Google drive
 -   OneDrive?
+
+### Export
+
+-   Extra export window
+-   Showing only board grid
 
 # ⚡ Vite + TypeScript + Svelte + Electron
 

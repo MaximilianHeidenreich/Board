@@ -30,7 +30,8 @@
     />
 
 {#if $activeBoardStore.userOverrides.layout === EBoardLayout.map}
-<BoardMapView/>
+<BoardMapView
+    bind:board/>
 {:else if $activeBoardStore.userOverrides.layout === EBoardLayout.grid}
 <BoardGridView 
     bind:board

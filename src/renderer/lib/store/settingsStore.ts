@@ -26,7 +26,12 @@ export let settingsStore = createModel<ISettings>({
             "[BufferedAction :: settingsStore] Queing settingsStore::saveFN"
         )
 
-        let res = await saveFn(o)
+        let res
+        try {
+            res = await saveFn(o)
+        } catch (e) {
+            console.log(e)
+        }
         if (isError(res)) {
             let error = (res as Rejection).toError()
             if (error instanceof CancelledError) {
@@ -36,6 +41,8 @@ export let settingsStore = createModel<ISettings>({
             } else if (error instanceof JsonError) {
                 // TODO: Handle other errors
                 console.warn("JSON asldl")
+            } else {
+                throw res
             }
 
             return { msg: "Could not save settingsStore", meta: res }

@@ -1,10 +1,7 @@
 import type { EBoardLayout } from "./EBoardLayout"
 
-export interface ICollection {
-    name: string
-    expanded: boolean
-    boards: string[]
-    subCollections: ICollection[]
+export interface IFolder {
+    [key: string]: IFolder
 }
 
 export interface ISettings {
@@ -16,11 +13,13 @@ export interface ISettings {
 
     // User
     displayName: string
+    licenseKey: string
 
     // App state
     openBoardId: string
     sidebarShown: boolean
-    collections: ICollection[]
+    favourites: string[]
+    folders: { [key: string]: {} }[]
 
     // Board view
     defaultBoardLayout: EBoardLayout

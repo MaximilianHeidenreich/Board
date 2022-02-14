@@ -14,6 +14,7 @@ import { createModel } from "sveltemodel/Model"
 import IPC from "../ipc/ipcBridge"
 import { boardsStore } from "./boardsStore"
 import { settingsStore } from "./settingsStore"
+import { routeStore } from "./routeStore"
 
 export const activeBoardIDStore = writable<string>()
 export let activeBoardStore = createModel<ILoadedBoard>({
@@ -99,6 +100,9 @@ export function openBoardRaw(
     // Save board as last opened
     settingsStore.mutate({ openBoardId: data.id })
 
+    // Auto change view
+    routeStore.set("/editor")
+
     return true
 }
 
@@ -128,7 +132,7 @@ export async function importLocalEntityToActive(
             let entityAsset: IAsset | undefined
             switch (a.assetType) {
                 case EAssetType.LOCAL_IMAGE:
-                    entityAsset = newIAssetLocalImage(a.assetPath)
+                    entityAsset = newIAssetLocalImage(a.assetID, a.assetPath)
                     break
                 default:
                     console.trace(
@@ -201,7 +205,22 @@ export async function importLocalEntityToActive(
 
 export async function removeEntityFromActive(
     entityId: string
-): Promise<boolean> {
+): TAsyncResult<true> {
+    // Remove asset
+    let entity = get(activeBoardStore).board.entities.find(
+        (e) => e.id === entityId
+    )
+
+    console.warn(entity)
+
+    if (entity?.asset.id) {
+        let res = await IPC.deleteAsset(
+            get(activeBoardIDStore),
+            entity?.asset.id
+        )
+        if (isError(res)) return toRejection(res)
+    }
+
     // Remove from state
     activeBoardStore.update((v) => {
         v.board.entities = v.board.entities.filter((e) => e.id !== entityId)

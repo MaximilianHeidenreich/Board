@@ -11,15 +11,15 @@
 
 <style lang="postcss">
     button {
-        @apply px-5 py-2.5 text-white font-semibold text-center text-sm rounded-lg bg-gray-800;
+        @apply px-5 py-2.5 text-white font-semibold text-center text-sm rounded-lg border-2 bg-neutral-900 border-neutral-700;
     }
     button:hover {
-        @apply bg-gray-900;
+        @apply bg-neutral-700;
     }
-    button.dark {
-        @apply bg-gray-800 border-gray-700;
+    :global(.app-wrapper.dark) button {
+        @apply bg-neutral-50 border-neutral-200 text-black;
     }
     button.dark:hover {
-        @apply bg-gray-700;
+        @apply bg-neutral-200;
     }
 </style>

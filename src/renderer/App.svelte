@@ -4,7 +4,7 @@
 
     import Dropzone from "./lib/components/coreUI/board/Dropzone.svelte";
     import BoardSwitcher from "./lib/components/coreUI/boardSwitcher/BoardSwitcher.svelte";
-    import { Route } from "tinro";
+    import { router, Route } from "tinro";
     import Dev from "./lib/pages/Dev.svelte";
     import DevIcons from "./lib/pages/dev/DevIcons.svelte";    
 
@@ -18,6 +18,8 @@
     import IPC from "./lib/ipc/ipcBridge";
     import Sidebar from "./lib/components/coreUI/sidebar/Sidebar.svelte";
     import Editor from "./lib/pages/Editor.svelte";
+import { routeStore } from "./lib/store/routeStore";
+import Settings from "./lib/pages/Settings.svelte";
  
     // Loat last opened board / create new if none exist
     onMount(async () => {
@@ -103,13 +105,9 @@
         {/if}
 
         <main>
-            
-            <Route path="/" redirect="/editor">
-                home
-            </Route>
-            <Route path="/editor">
-                
-                
+            {#if $routeStore === "/"}
+                index
+            {:else if $routeStore === "/editor"}
                 {#if $activeBoardStore}
                     <!--{#key activeBoardIDStore}-->
                     <Editor
@@ -123,20 +121,10 @@
                         </div>
                     </div>
                 {/if}
-                
-
-            </Route>
-            <Route path="/settings">
-                settings
-            </Route>
+            {:else if $routeStore === "/settings"}
+                <Settings />
+            {/if}
         </main>
-        
-        <!--<Route path="/dev">
-            <Dev/>
-        </Route>
-        <Route path="/dev/icons">
-            <DevIcons/>
-        </Route>-->
     </div>
 </div>
 
@@ -155,8 +143,9 @@
     }
     .app-wrapper {
         @apply w-full h-full overflow-hidden flex;
-        transition: background-color .3s 0s ease-in-out,
+        --trans-bg-color: background-color .3s 0s ease-in-out,
                     color .3s 0s ease-in-out;
+        transition: var(--trans-bg-color);
     }
     main {
         @apply w-full h-full py-12 px-8 overflow-hidden;

@@ -1,4 +1,10 @@
-import { BrowserWindow, ipcMain, systemPreferences, clipboard } from "electron"
+import {
+    BrowserWindow,
+    ipcMain,
+    systemPreferences,
+    clipboard,
+    shell,
+} from "electron"
 import IPC from "./ipcFunctions"
 
 interface ipcSendReceive {
@@ -9,6 +15,7 @@ interface ipcSendReceive {
 
 export const preloadChannels = [
     "ping",
+    "openExternal",
     "getVersion",
 
     "getSettings",
@@ -18,6 +25,7 @@ export const preloadChannels = [
 
     "getFilesDialog",
     "copyFilesToAssetsDir",
+    "deleteAsset",
 
     "createBoard",
     "deleteBoard",
@@ -48,6 +56,14 @@ function mainIpcFunction(
         switch (name) {
             case "ping":
                 resolve("pong")
+                break
+            case "openExternal":
+                if (!args[0]) {
+                    console.log("Tried to openExternal with no value!")
+                    reject("Tried to openExternal with no value!")
+                }
+                await shell.openExternal(args[0]) // TODO: Catch error
+                resolve(true)
                 break
             case "getVersion":
                 resolve(await IPC.getVersion())
@@ -80,14 +96,15 @@ function mainIpcFunction(
 
                 resolve(IPC.copyFilesToAssetsDir(files, boardId))
                 break
-
-            /*case "mkBoardDataDir":
-                if (!args[0]) {
-                    console.error("Tried to call mkBoardDataDir with no value!")
+            case "deleteAsset":
+                if (args.length !== 2) {
+                    console.error(
+                        "Tried to deleteAsset with insufficient args!"
+                    )
                     return
                 }
-                resolve(await mkBoardDataDir(args[0]))
-                break*/
+                resolve(await IPC.deleteAsset(args[0], args[1]))
+                break
 
             case "createBoard":
                 if (args.length < 1) {

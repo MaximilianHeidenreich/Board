@@ -22,6 +22,7 @@ export interface IGetFilesDialogResult {
 export interface ICopyFilesToAssetsDirResult
     extends Array<{
         filePath: string
+        assetID: string
         assetPath: string
         assetHash: string
         assetType: EAssetType
@@ -36,6 +37,11 @@ export interface ICreateBoardOptions {
 // Bridge interface
 export interface IIPCBridge {
     // CORE
+
+    /**
+     * Opens a url in the default browser.
+     */
+    openExternal: (url: string) => TAsyncResult<true>
 
     /**
      * @returns The current app version
@@ -58,14 +64,17 @@ export interface IIPCBridge {
      */
     setSettings: (data: ISettings) => TAsyncResult<true>
 
-    // FS
+    // FILE SYSTEM
     getFilesDialog: TGet<IGetFilesDialogResult>
 
+    // ASSETS
     copyFilesToAssetsDir: (
         filePaths: string[],
         boardId: string
     ) => TAsyncResult<ICopyFilesToAssetsDirResult>
+    deleteAsset: (boardID: string, assetID: string) => TAsyncResult<true>
 
+    // BOARDS
     createBoard: (
         id: string,
         options: ICreateBoardOptions

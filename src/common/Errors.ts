@@ -37,7 +37,8 @@ export class Rejection {
     constructor(reason: string, msg?: string, meta?: any) {
         this.reason = reason
         this.stackTrace = new Error().stack
-        this.msg = msg || REASON_MSG_MAP[reason]()
+        this.msg =
+            msg || REASON_MSG_MAP[reason] ? REASON_MSG_MAP[reason]() : reason
         this.meta = meta
     }
     toString() {

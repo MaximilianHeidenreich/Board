@@ -79,6 +79,22 @@ main {
 }
 
 /* Typography */
+.app-wrapper {
+    @apply text-black;
+    --muted-color: rgb(115, 115, 115);
+}
+.app-wrapper.dark {
+    --muted-color: rgb(163, 163, 163);
+}
+.app-wrapper .text-muted {
+    @apply text-neutral-500;
+}
+.app-wrapper.dark {
+    @apply text-white;
+}
+.app-wrapper.dark .text-muted {
+    @apply text-neutral-400;
+}
 /*.txt-muted {
     color: var(--textMuted);
 }
@@ -104,6 +120,12 @@ input {
 }
 .form-control {
     @apply my-5;
+}
+input[type="text"] {
+    @apply bg-gray-50 border border-gray-300 text-black sm:text-sm rounded-lg focus:ring-black focus:border-black outline-none block w-full p-2.5;
+}
+.app-wrapper.dark input[type="text"] {
+    @apply bg-neutral-800 border border-neutral-700 text-white sm:text-sm rounded-lg focus:ring-white focus:border-white outline-none block w-full p-2.5;
 }
 /*input {
     @apply w-full py-1 bg-transparent border-b-2 border-slate-200 outline-none focus:border-slate-300;

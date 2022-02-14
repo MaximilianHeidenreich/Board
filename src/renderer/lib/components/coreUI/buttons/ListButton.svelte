@@ -1,12 +1,17 @@
 <script>
-import { themeStore } from "@renderer/lib/store/themeStore";
-
+    import { themeStore } from "@renderer/lib/store/themeStore";
     import { createEventDispatcher } from "svelte";
+ 
+    // STATE
+    export let disabled = false
 
 	const dispatch = createEventDispatcher();
 </script>
 
-<button class:dark={$themeStore.darkMode} on:click={() => dispatch("click")}>
+<button 
+    disabled={disabled}
+    class:disabled
+    class:dark={$themeStore.darkMode} on:click={() => dispatch("click")}>
     <slot/>
 </button>
 
@@ -20,7 +25,7 @@ import { themeStore } from "@renderer/lib/store/themeStore";
     button:hover {
         @apply bg-gray-100;
     }
-    button.dark {
-
+    button.disabled {
+        @apply bg-neutral-100 opacity-60 cursor-not-allowed;
     }
 </style>

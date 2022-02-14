@@ -20,11 +20,14 @@ export function fileExtensionToEAssetType(file: string): EAssetType {
 }
 
 export interface IAsset {
-    id?: string
+    id: string
 }
 export interface IAssetLocalImage extends IAsset {
     assetPath: string
 }
-export let newIAssetLocalImage = (assetPath: string): IAssetLocalImage => {
-    return { assetPath }
+export let newIAssetLocalImage = (
+    id: string,
+    assetPath: string
+): IAssetLocalImage => {
+    return { id, assetPath }
 }

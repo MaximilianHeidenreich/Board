@@ -81,6 +81,9 @@ import { settingsStore } from "@renderer/lib/store/settingsStore";
                     <AddMediaBtn/>
                 </li>
                 <li>
+                    <LayoutToggle/>
+                </li>
+                <!--<li>
                     <Tooltip>
                         <button slot="content">
                             <ThemedElement>
@@ -96,7 +99,7 @@ import { settingsStore } from "@renderer/lib/store/settingsStore";
                     </Tooltip>
                     
                 </li>
-                <!--<li>
+                <li>
                     <Tooltip>
                         <button slot="content">
                             <ThemedElement>
